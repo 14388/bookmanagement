@@ -1,0 +1,12 @@
+body{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.container{
+    margin-top: 5%;
+    padding: 10% auto;
+    text-align: center;
+}
+.book-cover {
+    width: 200px;
+    height: 300px;
+}
