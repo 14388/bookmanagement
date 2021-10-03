@@ -1,4 +1,6 @@
 /* Button */
-function toItalic(){
-    document.getElementById("book-content").style.fontStyle = "italic";
+function toItalic(totalChapterNumber){
+    for(var i = 1; i < totalChapterNumber; i++) {
+        document.getElementById("content" + i).style.fontStyle = "italic";
+    }
 }

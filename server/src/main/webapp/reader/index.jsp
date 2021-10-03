@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/reader/style.css">
 </head>
 <body>
 <%
@@ -43,16 +43,17 @@
                 String id = "C" + index;
             %>
             <h3 id="<%=id%>"> <%= index + "-" + title %></h3>
-            <p id="book-content"><%=content%></p>
+            <div id="<%="content" + index%>"><%=content%></div>
             <% } %>
         </div>
     </div>
-    <button onclick="toItalic()" type="button" class="btn btn-secondary">Italic</button>
+
+    <button onclick="toItalic(<%=chapterList.size()%>)" type="button" class="btn btn-secondary">Italic</button>
 </div>
 
 
 
 
-<script src="script.js"></script>
+<script src="/reader/script.js"></script>
 </body>
 </html>
