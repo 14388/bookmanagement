@@ -33,11 +33,11 @@
                 String title = chapter.getTitle();
                 String hrefIndex = "#C" + index;
             %>
-            <p><a href="<%=hrefIndex%>"> <%=index + "-" + title%> </a> </p>
+            <p><a href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
             <% } %>
 
 
-            <button onclick="toItalic(<%=chapterList.size()%>)" type="button" class="btn btn-secondary">Italic</button>
+            <button onclick="toItalic(<%=chapterList.size()%>)" type="button" class="btn btn-secondary">Italic</button><br/>
 
             <% for(Chapter chapter : chapterList) { %>
             <%
@@ -46,7 +46,7 @@
                 String content = chapter.getContent();
                 String id = "C" + index;
             %>
-            <h3 id="<%=id%>"> <%= index + "-" + title %></h3>
+            <h3 id="<%=id%>"> <%= "Chapter " + index + " - " + title %></h3>
             <div id="<%="content" + index%>"><%=content%></div>
             <% } %>
         </div>
