@@ -9,6 +9,15 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div class="menu">
+    <ul>
+        <li><a href="/" class="left-menu" data-link>Home</a></li>
+        <li><a href="/Books" class="left-menu" data-link>Books</a></li>
+        <li><a href="/Chapters" class="left-menu" data-link>Chapter List</a></li>
+        <li><a class="right-menu">highlight</a></li>
+        <li><a class="right-menu">Bookmark</a></li>
+    </ul>
+</div>
 <div class="container">
     <div id="booklist" class="row">
     </div>
@@ -20,5 +29,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="JavaScript/app.js"></script>
+<!-- declare the js file as module -->
+<script src="JavaScript/index.js" type="module"></script>
 </body>
 </html>
