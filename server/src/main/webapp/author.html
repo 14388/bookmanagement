@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class="container">
+<input type="text" placeholder="Book Title" style="width: 30%">
+<input type="number" id="Cnum" placeholder="Number of Chapter" style="width: 30%">
+<input type="button" onClick="getCnum()" value="Save">
+	
+<div id="print"></div>	
+<button type="submit" id="submit" >Submit</button>
+</div>	
+	<script>
+		function getCnum(){
+			var k = document.getElementById("Cnum").value;
+			for (let i=1;i<=k;i++){
+				document.getElementById("print").innerHTML +=
+					"<h3>Chapter "+i+":</h3>";
+				document.getElementById("print").innerHTML +=
+					"<input type='text' placeholder='Chapter title' style='width: 50%;margin: 15px 0'>";
+				document.getElementById("print").innerHTML +=
+					"<textarea rows='15' style='width: 50%'></textarea>";
+			}
+			
+		}
+		
+	</script>
+</body>
+</html>

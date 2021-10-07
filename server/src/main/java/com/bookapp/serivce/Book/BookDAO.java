@@ -18,6 +18,7 @@ public class BookDAO {
 
     public List<Book> getAll() {
         Connection connection = new DBUtil().getConnection();
+        System.out.println(connection);
         try{
             List<Book> bookList = new ArrayList<Book>();
             Book book = new Book();
