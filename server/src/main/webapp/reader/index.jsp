@@ -16,14 +16,11 @@
 <body>
 <div class="menu">
     <ul>
-        <li><a href="/Books" class="left-menu" data-link>Books</a></li>
-        <li><a href="/Chapters" class="left-menu" data-link>Chapters</a></li>
-        <li><a href="/Reader" class="left-menu" data-link>Readers</a></li>
-        <li><a class="right-menu">highlight</a></li>
-        <li><a class="right-menu">Bookmark</a></li>
+        <li><a href="/" class="left-menu" data-link>Books</a></li>
     </ul>
 </div>
 <%
+    String bCode = (String) request.getParameter("bcode");
     String bookName = (String) request.getAttribute("title");
     String author = (String) request.getAttribute("author");
     List<Chapter> chapterList = (List<Chapter>) request.getAttribute("chapterList");
@@ -42,10 +39,11 @@
             <% for(Chapter chapter : chapterList) {%>
             <%
                 int index = chapter.getIndex();
+                int requestIndex = index - 1;
                 String title = chapter.getTitle();
-                String hrefIndex = "#C" + index;
+                String hrefIndex = "/getChapter?bcode=" + bCode + "&index=" + requestIndex;
             %>
-            <p><a  href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
+            <p><a href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
             <% } %>
         </div>
     </div>

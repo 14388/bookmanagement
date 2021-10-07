@@ -24,6 +24,7 @@ public class GetBook extends HttpServlet {
             List<Chapter> chapterList = book.getChapterList();
             request.setAttribute("title", bookName);
             request.setAttribute("author", authorName);
+            request.setAttribute("chapterList", chapterList);
             request.getRequestDispatcher("reader/index.jsp").forward(request, response);
         } catch (ServletException exception) {
             exception.printStackTrace();

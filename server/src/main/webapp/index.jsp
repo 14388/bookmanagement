@@ -12,10 +12,6 @@
 <div class="menu">
     <ul>
         <li><a href="/" class="left-menu" data-link>Books</a></li>
-        <li><a href="/Chapters" class="left-menu" data-link>Chapters</a></li>
-        <li><a href="/Reader" class="left-menu" data-link>Readers</a></li>
-        <li><a class="right-menu">highlight</a></li>
-        <li><a class="right-menu">Bookmark</a></li>
     </ul>
 </div>
 <div class="container">

@@ -3,13 +3,21 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
+<!--  <servlet>-->
+<!--    <servlet-name>DefaultPage</servlet-name>-->
+<!--    <servlet-class>com.bookapp.servlet.DefaultPage</servlet-class>-->
+<!--  </servlet>-->
+<!--  <servlet-mapping>-->
+<!--    <servlet-name>DefaultPage</servlet-name>-->
+<!--    <url-pattern>/</url-pattern>-->
+<!--  </servlet-mapping>-->
   <servlet>
-    <servlet-name>DefaultPage</servlet-name>
-    <servlet-class>com.bookapp.servlet.DefaultPage</servlet-class>
+    <servlet-name>GetBookChapter</servlet-name>
+    <servlet-class>com.bookapp.servlet.GetBookChapter</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>DefaultPage</servlet-name>
-    <url-pattern>/</url-pattern>
+    <servlet-name>GetBookChapter</servlet-name>
+    <url-pattern>/getChapter</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>GetBook</servlet-name>
