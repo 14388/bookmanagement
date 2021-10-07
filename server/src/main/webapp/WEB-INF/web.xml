@@ -4,6 +4,14 @@
 
 <web-app>
   <servlet>
+    <servlet-name>DefaultPage</servlet-name>
+    <servlet-class>com.bookapp.servlet.DefaultPage</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DefaultPage</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>GetBook</servlet-name>
     <servlet-class>com.bookapp.servlet.GetBook</servlet-class>
   </servlet>

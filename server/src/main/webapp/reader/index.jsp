@@ -11,9 +11,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="/reader/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div class="menu">
+    <ul>
+        <li><a href="/Books" class="left-menu" data-link>Books</a></li>
+        <li><a href="/Chapters" class="left-menu" data-link>Chapters</a></li>
+        <li><a href="/Reader" class="left-menu" data-link>Readers</a></li>
+        <li><a class="right-menu">highlight</a></li>
+        <li><a class="right-menu">Bookmark</a></li>
+    </ul>
+</div>
 <%
     String bookName = (String) request.getAttribute("title");
     String author = (String) request.getAttribute("author");
@@ -21,41 +30,26 @@
 %>
 
 <div class="container">
-    <div class="row">
-        <div class="col-lg-12">
-            <h1> <%= "Name of the book:" + bookName %> </h1> <br/>
-            <h2> <%= "Author of the book: " + author%> </h2> <br/>
+    <div>
+        <div class="book-detail">
+            <h1> <%= bookName %> </h1> <br/>
+            <h2> <%= "Author: " + author%> </h2> <br/>
 
-            <h3> Table of contents </h3>
+        </div>
+
+        <div class="chapter-title">
+            <h3 class="table-of-content"> Table of contents </h3>
             <% for(Chapter chapter : chapterList) {%>
             <%
                 int index = chapter.getIndex();
                 String title = chapter.getTitle();
                 String hrefIndex = "#C" + index;
             %>
-            <p><a href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
-            <% } %>
-
-            <div class="btn-group" role="group">
-                <button onclick="toItalic()" type="button" class="btn btn-secondary first-button">Italic</button><br/>
-                <button onclick="toBold()" type="button" class="btn btn-secondary other-button">Bold</button><br/>
-            </div>
-            <% for(Chapter chapter : chapterList) { %>
-            <%
-                int index = chapter.getIndex();
-                String title = chapter.getTitle();
-                String content = chapter.getContent();
-                String id = "C" + index;
-            %>
-            <h3 id="<%=id%>"> <%= "Chapter " + index + " - " + title %></h3>
-            <div id="<%="content" + index%>" class="chapter-content"><%=content%></div>
+            <p><a  href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
             <% } %>
         </div>
     </div>
 </div>
-
-
-
 
 <script src="/reader/script.js"></script>
 </body>
