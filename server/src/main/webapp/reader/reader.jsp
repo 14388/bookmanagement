@@ -32,7 +32,7 @@
 %>
 <div class="container">
         <h3><%= "Chapter " + index + " - " + title %></h3>
-        <p class="chapter-content"><%=content%></p>
+        <div class="chapter-content"><%=content%></div>
 </div>
 <script src="/reader/script.js"></script>
 </body>
