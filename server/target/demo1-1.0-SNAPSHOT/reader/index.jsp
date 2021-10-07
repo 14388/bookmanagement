@@ -12,6 +12,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="/reader/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 <%
@@ -36,9 +37,13 @@
             <p><a href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
             <% } %>
 
-
-            <button onclick="toItalic(<%=chapterList.size()%>)" type="button" class="btn btn-secondary">Italic</button><br/>
-
+            <div class="btn-group" role="group">
+                <button onclick="toItalic()" type="button" class="btn btn-secondary first-button">Italic</button><br/>
+                <button onclick="toBold()" type="button" class="btn btn-secondary other-button">Bold</button><br/>
+                <button onclick="highlightSelection()" type="button" class="btn btn-secondary">Highlight</button><br/>
+                <button onclick="increaseFontSize()" type="button" class="btn btn-secondary">Size up</button><br/>
+                <button onclick="decreaseFontSize()" type="button" class="btn btn-secondary">Size down</button><br/>
+            </div>
             <% for(Chapter chapter : chapterList) { %>
             <%
                 int index = chapter.getIndex();
@@ -47,7 +52,7 @@
                 String id = "C" + index;
             %>
             <h3 id="<%=id%>"> <%= "Chapter " + index + " - " + title %></h3>
-            <div id="<%="content" + index%>"><%=content%></div>
+            <div id="<%="content" + index%>" class="chapter-content"><%=content%></div>
             <% } %>
         </div>
     </div>
