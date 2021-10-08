@@ -36,9 +36,10 @@
             <p><a href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
             <% } %>
 
-
-            <button onclick="toItalic(<%=chapterList.size()%>)" type="button" class="btn btn-secondary">Italic</button><br/>
-
+            <div class="btn-group" role="group">
+                <button onclick="toItalic()" type="button" class="btn btn-secondary first-button">Italic</button><br/>
+                <button onclick="toBold()" type="button" class="btn btn-secondary other-button">Bold</button><br/>
+            </div>
             <% for(Chapter chapter : chapterList) { %>
             <%
                 int index = chapter.getIndex();
@@ -47,7 +48,7 @@
                 String id = "C" + index;
             %>
             <h3 id="<%=id%>"> <%= "Chapter " + index + " - " + title %></h3>
-            <div id="<%="content" + index%>"><%=content%></div>
+            <div id="<%="content" + index%>" class="chapter-content"><%=content%></div>
             <% } %>
         </div>
     </div>

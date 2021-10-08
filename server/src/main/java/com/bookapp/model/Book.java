@@ -25,12 +25,12 @@ public class Book {
         return authorName;
     }
 
-    public List<Chapter> getChapterList(){
-        return chapterList;
-    }
-
     public int getCode() {
         return code;
+    }
+
+    public List<Chapter> getChapterList() {
+        return chapterList;
     }
 
     public void setChapterList(List<Chapter> chapterList) {

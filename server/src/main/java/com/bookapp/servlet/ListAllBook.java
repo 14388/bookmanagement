@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class ListBook extends HttpServlet {
+public class ListAllBook extends HttpServlet {
     private BookService bookService = new BookService();
 
     @Override
@@ -22,7 +22,6 @@ public class ListBook extends HttpServlet {
             List<Book> bookList = bookService.getAll();
             ObjectMapper objectMapper = new ObjectMapper();
             String bookListJSON = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(bookList);
-
 
             PrintWriter printWriter = response.getWriter();
             response.setContentType("application/json");

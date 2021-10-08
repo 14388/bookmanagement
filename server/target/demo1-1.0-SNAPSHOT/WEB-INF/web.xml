@@ -4,20 +4,20 @@
 
 <web-app>
   <servlet>
-    <servlet-name>GetBook</servlet-name>
-    <servlet-class>com.bookapp.servlet.GetBook</servlet-class>
+    <servlet-name>BookServlet</servlet-name>
+    <servlet-class>com.bookapp.servlet.BookServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>GetBook</servlet-name>
-    <url-pattern>/get</url-pattern>
+    <servlet-name>BookServlet</servlet-name>
+    <url-pattern>/book</url-pattern>
   </servlet-mapping>
   <servlet>
-    <servlet-name>ListBook</servlet-name>
-    <servlet-class>com.bookapp.servlet.ListBook</servlet-class>
+    <servlet-name>ListAllBook</servlet-name>
+    <servlet-class>com.bookapp.servlet.ListAllBook</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>ListBook</servlet-name>
-    <url-pattern>/list</url-pattern>
+    <servlet-name>ListAllBook</servlet-name>
+    <url-pattern>/book/all</url-pattern>
   </servlet-mapping>
 </web-app>
 
