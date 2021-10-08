@@ -71,15 +71,56 @@ function initializeBookList() {
 }
 
 function renderBook(bookCode, bookName) {
-    var onclickFunction = "editBook(" + bookCode + ",\"" + bookName + "\")";
+    var editBookFunction = "editBook(" + bookCode + ",\"" + bookName + "\")";
+    var changeBookNameFunction = "changeBookName(" + bookCode + ")";
+    var deleteBookFunction = "deleteBook(" + bookCode + ")";
     createBookButton.insertAdjacentHTML('beforebegin', "<div>" + bookName +
-        "<button style=\"left: 1%;position: relative;\" title=\"Change name\"> <i class=\"fas fa-feather\"></i></button>" +
-        "<button style=\"left: 1.2%; position: relative;\" title=\"Edit\" onclick='" + onclickFunction  + "'> <i class=\"fas fa-edit\"></i></button>" +
-        "<button style=\"left: 1.4%;position: relative;\" title=\"Delete\"> <i class=\"fas fa-trash\"></i></button></div><br/>");
+        "<button style=\"left: 1%;position: relative;\" title=\"Change name\" onclick ='" + changeBookNameFunction + "'> <i class=\"fas fa-feather\"></i></button>" +
+        "<button style=\"left: 1.2%; position: relative;\" title=\"Edit\" onclick='" + editBookFunction  + "'> <i class=\"fas fa-edit\"></i></button>" +
+        "<button style=\"left: 1.4%;position: relative;\" title=\"Delete\" onclick='" + deleteBookFunction  + "'> <i class=\"fas fa-trash\"></i></button></div><br/>");
 }
 
 function editBook(bookCode,bookName) {
     localStorage.setItem("browsing-book-name", bookName);
     localStorage.setItem("browsing-book-id", bookCode);
     window.location.href = 'chapter.jsp';
+}
+
+function changeBookName(bookID) {
+    var newName = prompt("New book name");
+    if(newName != null) {
+        var messageJSON = {
+            type: "change-book-name",
+            bookCode: bookID,
+            newBookName: newName
+        }
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8;',
+            url: 'http://localhost:8080/book',
+            data: JSON.stringify(messageJSON),
+            success: function(response) {
+                location.reload();
+            }
+        })
+    }
+}
+
+function deleteBook(bookID) {
+    var messageJSON = {
+        type: "delete-book",
+        bookCode: bookID,
+    }
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8;',
+        url: 'http://localhost:8080/book',
+        data: JSON.stringify(messageJSON),
+        success: function(response) {
+            location.reload();
+        }
+    })
+
 }

@@ -17,6 +17,7 @@
     <button onclick = "execCmd('justifyCenter');"><i class="fas fa-align-center "></i></button>
     <button onclick = "execCmd('justifyRight');"><i class="fas fa-align-right "></i></button>
     <button onclick = "execCmd('justifyFull');"><i class="fas fa-align-justify "></i></button>
+    <button onclick = "execCmd('undo');"><i class="fas fa-undo"></i></button>
     Font:
     <select onclick = "execCommandWithArg('fontName', this.value);">
         <option value="Arial">Arial</option>
@@ -40,7 +41,7 @@
     Background: <input type="color" onchange="execCommandWithArg('hiliteColor', this.value);">
 </div>
 <iframe name = "richTextField" style="width:1500px; height:500px;"></iframe><br/>
-<button type="button" id="save-content-btn">Submit</button>
+<button type="button" id="save-content-btn">Save</button>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="editor.script.js"></script>
 </body>

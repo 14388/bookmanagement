@@ -70,9 +70,6 @@ public class BookServlet extends HttpServlet {
                 int bookCode = readJSON.get("bookCode").asInt();
                 int chapterNumber = readJSON.get("chapterNumber").asInt();
                 String chapterTitle = readJSON.get("chapterTitle").asText();
-                System.out.println(bookCode);
-                System.out.println(chapterNumber);
-                System.out.println(chapterTitle);
                 bookService.createNewChapter(bookCode, chapterNumber, chapterTitle);
                 String message = "CREATED";
                 jsonUtil.writeObjectAsJSONResponse(response, message);
@@ -89,6 +86,34 @@ public class BookServlet extends HttpServlet {
                 String content = readJSON.get("content").asText();
                 bookService.saveChapterContent(bookCode, chapterNumber, content);
                 String message = "SAVED";
+                jsonUtil.writeObjectAsJSONResponse(response, message);
+            }
+            else if(type.equals("delete-book")) {
+                int bookCode = readJSON.get("bookCode").asInt();
+                bookService.deleteBook(bookCode);
+                String messsage = "SUCCESS";
+                jsonUtil.writeObjectAsJSONResponse(response, messsage);
+            }
+            else if(type.equals("delete-chapter")) {
+                int bookCode = readJSON.get("bookCode").asInt();
+                int chapterNumber = readJSON.get("chapterNumber").asInt();
+                bookService.deleteChapter(bookCode, chapterNumber);
+                String message = "SUCCESS";
+                jsonUtil.writeObjectAsJSONResponse(response, message);
+            }
+            else if(type.equals("change-book-name")) {
+                int bookCode = readJSON.get("bookCode").asInt();
+                String newBookName = readJSON.get("newBookName").asText();
+                bookService.changeBookName(bookCode, newBookName);
+                String message = "SUCCESS";
+                jsonUtil.writeObjectAsJSONResponse(response, message);
+            }
+            else if(type.equals("change-chapter-name")) {
+                int bookCode = readJSON.get("bookCode").asInt();
+                int chapterNumber = readJSON.get("chapterNumber").asInt();
+                String newChapterName = readJSON.get("newChapterName").asText();
+                bookService.changeChapterName(bookCode, chapterNumber, newChapterName);
+                String message = "SUCCESS";
                 jsonUtil.writeObjectAsJSONResponse(response, message);
             }
 

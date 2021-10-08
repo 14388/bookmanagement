@@ -20,6 +20,13 @@ public class BookDAO {
     private final String createChapterScript = "INSERT INTO BookChapter(BCode, CNum, CTitle, CContent) VALUES(?, ?, ?, ?)";
     private final String getChapterContentScript = "SELECT CContent FROM BookChapter WHERE BCode = ? AND CNum = ?";
     private final String saveChapterContentScript = "UPDATE BookChapter SET CContent = ? WHERE BCode = ? AND CNum = ?";
+    private final String changeBookNameScript = "UPDATE Book SET BName = ? WHERE BCode = ?";
+    private final String changeChapterNameScript = "UPDATE BookChapter SET CTitle = ? WHERE BCode = ? AND CNum = ?";
+    private final String deleteChapterScript = "DELETE FROM BookChapter WHERE BCode = ? AND CNum = ?";
+    private final String extraScript = "SET @ROW = 0";
+    private final String reorderChapterNumberScript = "UPDATE BookChapter SET CNum = @ROW := @ROW+1 WHERE BCode = ? ORDER BY Bcode ASC";
+    private final String deleteBookScript = "DELETE FROM Book WHERE BCode = ?";
+
 
     public List<Book> getInfoAll() {
         Connection connection = new DBUtil().getConnection();
@@ -186,6 +193,7 @@ public class BookDAO {
                 return newBookID;
             }
 
+            preparedStatement.close();
             return 0;
         } catch(Exception exception) {
             exception.printStackTrace();
@@ -210,6 +218,7 @@ public class BookDAO {
             preparedStatement.setString(3, chapterTitle);
             preparedStatement.setString(4, "");
             preparedStatement.executeUpdate();
+            preparedStatement.close();
         } catch(Exception exception) {
             exception.printStackTrace();
         } finally {
@@ -234,6 +243,7 @@ public class BookDAO {
             while(resultSet.next()) {
                 content = resultSet.getString(1);
             }
+            preparedStatement.close();
             return content;
         } catch(Exception exception) {
             exception.printStackTrace();
@@ -257,6 +267,7 @@ public class BookDAO {
             preparedStatement.setInt(2, bookCode);
             preparedStatement.setInt(3, chapterNumber);
             preparedStatement.executeUpdate();
+            preparedStatement.close();
         } catch(Exception exception) {
             exception.printStackTrace();
         } finally {
@@ -270,5 +281,92 @@ public class BookDAO {
         }
     }
 
+    public void changeBookName(int bookCode, String newBookName) {
+        Connection connection = new DBUtil().getConnection();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(changeBookNameScript);
+            preparedStatement.setString(1, newBookName);
+            preparedStatement.setInt(2, bookCode);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch(Exception exception) {
+            exception.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            }
+        }
+    }
 
+    public void changeChapterName(int bookCode, int chapterNumber, String newChapterName) {
+        Connection connection = new DBUtil().getConnection();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(changeChapterNameScript);
+            preparedStatement.setString(1, newChapterName);
+            preparedStatement.setInt(2, bookCode);
+            preparedStatement.setInt(3, chapterNumber);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch(Exception exception) {
+            exception.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void deleteChapter(int bookCode, int chapterNumber) {
+        Connection connection = new DBUtil().getConnection();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteChapterScript);
+            preparedStatement.setInt(1, bookCode);
+            preparedStatement.setInt(2, chapterNumber);
+            preparedStatement.executeUpdate();
+            preparedStatement = connection.prepareStatement(extraScript);
+            preparedStatement.executeQuery();
+            preparedStatement = connection.prepareStatement(reorderChapterNumberScript);
+            preparedStatement.setInt(1, bookCode);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch(Exception exception) {
+            exception.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void deleteBook(int bookCode) {
+        Connection connection = new DBUtil().getConnection();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteBookScript);
+            preparedStatement.setInt(1, bookCode);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch(Exception exception) {
+            exception.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            }
+        }
+    }
 }

@@ -43,4 +43,20 @@ public class BookService {
     public void saveChapterContent(int bookCode, int chapterNumber, String content) {
         bookDAO.saveChapterContent(bookCode, chapterNumber, content);
     }
+
+    public void changeBookName(int bookCode, String newBookName) {
+        bookDAO.changeBookName(bookCode, newBookName);
+    }
+
+    public void changeChapterName(int bookCode, int chapterNumber, String newChapterName) {
+        bookDAO.changeChapterName(bookCode, chapterNumber, newChapterName);
+    }
+
+    public void deleteChapter(int bookCode, int chapterNumber) {
+        bookDAO.deleteChapter(bookCode, chapterNumber);
+    }
+
+    public void deleteBook(int bookCode) {
+        bookDAO.deleteBook(bookCode);
+    }
 }
