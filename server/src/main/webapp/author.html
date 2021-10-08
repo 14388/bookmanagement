@@ -7,17 +7,21 @@
 </head>
 
 <body>
+
 <div class="container">
-<input type="text" placeholder="Book Title" style="width: 30%">
-<input type="number" id="Cnum" placeholder="Number of Chapter" style="width: 30%">
-<input type="button" onClick="getCnum()" value="Save">
-	
-<div id="print"></div>	
-<button type="submit" id="submit" >Submit</button>
+	<input type="text" placeholder="Book Title" id="title"><br>
+	<input type="text" placeholder="Author" id="author"><br>
+	<!--get number of chapter-->
+	<input type="number" id="Cnum" placeholder="Number of Chapter"><br>
+	<input type="button" onClick="getCnum()" id="CnumBtn" value="Save">
+
+	<div id="print"></div>	
+	<button type="submit" id="submit" disabled >Submit</button>
 </div>	
 	<script>
 		function getCnum(){
 			var k = document.getElementById("Cnum").value;
+			
 			for (let i=1;i<=k;i++){
 				document.getElementById("print").innerHTML +=
 					"<h3>Chapter "+i+":</h3>";
@@ -26,7 +30,8 @@
 				document.getElementById("print").innerHTML +=
 					"<textarea rows='15' style='width: 50%'></textarea>";
 			}
-			
+			document.getElementById("CnumBtn").disabled = true;
+			document.getElementById("submit").disabled = false;
 		}
 		
 	</script>

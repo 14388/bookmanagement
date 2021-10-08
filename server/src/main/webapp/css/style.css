@@ -10,3 +10,18 @@ body{
     width: 200px;
     height: 300px;
 }
+#title,#author,#Cnum{
+	width: 30%;
+	height: 40px;
+	border-radius: 5px;
+	font-size: 18px;
+	margin:15px;
+	float: none;
+}
+#CnumBtn,#submit
+{
+	width: 10%;
+	height: 30px;
+	border-radius: 5px;
+	font-size: 16px;
+}
