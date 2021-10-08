@@ -11,28 +11,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="/reader/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+<div class="menu">
+    <ul>
+        <li><a href="/" class="left-menu" data-link>Books</a></li>
+    </ul>
+</div>
 <%
+    String bCode = (String) request.getParameter("bcode");
     String bookName = (String) request.getAttribute("title");
     String author = (String) request.getAttribute("author");
     List<Chapter> chapterList = (List<Chapter>) request.getAttribute("chapterList");
 %>
 
 <div class="container">
-    <div class="row">
-        <div class="col-lg-12">
-            <h1> <%= "Name of the book:" + bookName %> </h1> <br/>
-            <h2> <%= "Author of the book: " + author%> </h2> <br/>
+    <div>
+        <div class="book-detail">
+            <h1> <%= bookName %> </h1> <br/>
+            <h2> <%= "Author: " + author%> </h2> <br/>
 
-            <h3> Table of contents </h3>
+        </div>
+
+        <div class="chapter-title">
+            <h3 class="table-of-content"> Table of contents </h3>
             <% for(Chapter chapter : chapterList) {%>
             <%
                 int index = chapter.getIndex();
+                int requestIndex = index - 1;
                 String title = chapter.getTitle();
-                String hrefIndex = "#C" + index;
+                String hrefIndex = "/getChapter?bcode=" + bCode + "&index=" + requestIndex;
             %>
             <p><a href="<%=hrefIndex%>"> <%="Chapter " + index + " - " + title%> </a> </p>
             <% } %>
@@ -57,9 +66,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 <script src="/reader/script.js"></script>
 </body>
