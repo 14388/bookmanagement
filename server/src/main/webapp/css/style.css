@@ -1,10 +1,9 @@
 body{
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    margin: 0 50px;
     background: rgba(227,229,232,.3);
 }
 .container{
-    margin:5%;
+    margin:7% 5% 5% 5%;
     padding: 0 5%;
     max-width: 90%;
     text-align: center;
@@ -19,12 +18,15 @@ body{
 
 /* Header Bar - Start */
 .menu ul {
+    margin: auto;
     list-style-type: none;
-    margin: 0 50px;
-    padding: 0;
-    overflow: hidden;
+    padding: 0 10%;
     background: #E7E9EB;
     border-radius: 5px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 .left-menu {
@@ -65,4 +67,8 @@ button.btn{
 
 .chapter-content {
     text-align: left;
+}
+
+.highlight {
+    background-color: yellow;
 }
