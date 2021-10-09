@@ -41,7 +41,7 @@ richTextField.document.getElementsByTagName('body')[0].addEventListener('paste',
 
     let text = event.clipboardData.getData('text');
 
-    richTextField.document.execCommand("insertHTML", false, text);
+    richTextField.document.execCommand("insertText", false, text);
 
 });
 
