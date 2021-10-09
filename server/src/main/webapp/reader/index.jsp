@@ -49,6 +49,5 @@
     </div>
 </div>
 
-<script src="/reader/script.js"></script>
 </body>
 </html>

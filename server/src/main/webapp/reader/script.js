@@ -132,3 +132,15 @@ function decreaseFontSize(){
         }
     }
 }
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    var scrollpos = localStorage.getItem('scrollpos');
+    if (scrollpos) window.scrollTo(0, scrollpos);
+});
+window.onbeforeunload = function(e) {
+    localStorage.setItem('scrollpos', window.scrollY);
+};
+window.addEventListener("scroll", function(event) {
+    let scroll = this.scrollY;
+    console.log(scroll);
+})
