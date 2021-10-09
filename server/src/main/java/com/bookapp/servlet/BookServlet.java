@@ -20,26 +20,6 @@ public class BookServlet extends HttpServlet {
     JSONUtil jsonUtil = new JSONUtil();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            int bookCode = Integer.parseInt(request.getParameter("bcode"));
-            Book book = bookService.get(bookCode);
-            String bookName = book.getBookName();
-            String authorName = book.getAuthorName();
-            List<Chapter> chapterList = book.getChapterList();
-            System.out.println(chapterList.size());
-            request.setAttribute("title", bookName);
-            request.setAttribute("author", authorName);
-            request.setAttribute("chapterList", chapterList);
-            request.getRequestDispatcher("reader/index.jsp").forward(request, response);
-        } catch (ServletException exception) {
-            exception.printStackTrace();
-        } catch(IOException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         try {
             JsonNode readJSON = jsonUtil.getJSONFromRequest(request);
