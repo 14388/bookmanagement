@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div class="menu">
+    <ul>
+        <li><a href="/" class="left-menu" data-link>Books</a></li>
+    </ul>
+</div>
 <div class="container">
     <div id="booklist" class="row">
     </div>
