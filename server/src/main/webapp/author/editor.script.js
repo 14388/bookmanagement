@@ -36,6 +36,15 @@ function execCommandWithArg(command, arg) {
     richTextField.document.execCommand(command, false, arg);
 }
 
+richTextField.document.getElementsByTagName('body')[0].addEventListener('paste', (event) => {
+    event.preventDefault();
+
+    let text = event.clipboardData.getData('text');
+
+    richTextField.document.execCommand("insertHTML", false, text);
+
+});
+
 saveContentButton.onclick = function() {
     var messageJSON = {
         type: "save-chapter-content",
