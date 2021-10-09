@@ -5,6 +5,7 @@ let highlighted = false;
 let maxSize = 30; //px
 let minSize = 10; //px
 
+
 // function toItalic() {
 //     let style = 'italic';
 //     changeFontStyle(style)

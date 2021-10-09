@@ -5,17 +5,17 @@ function getAllBook(){
         type: 'GET',
         dataType: 'json',
         contentType: 'application/json',
-        url: 'http://localhost:8080/list',
+        url: 'http://localhost:8080/book/all',
         success: function(data) {
-            var bookList = data;
-            showAllBook(bookList);
-
+            showAllBook(data);
         }})
 }
 
 function showAllBook(bookList) {
     let html="";
     for (let i = 0; i < bookList.length ; i++){
+        html += "<div id='"+ bookList[i].code + "'class='book col-lg-3'>\n "+
+            "       <a href='/book?bcode=" + bookList[i].code + "'>"+
         html += "<div id='"+ bookList[i].code + "'class='book col-lg-4'>\n "+
             "       <a href='/get?bcode=" + bookList[i].code + "'>"+
             "       <h1 class='book-title'>"+ bookList[i].bookName +"</h1>\n"+

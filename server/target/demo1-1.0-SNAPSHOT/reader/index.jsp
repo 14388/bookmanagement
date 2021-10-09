@@ -52,6 +52,7 @@
                 <button onclick="highlightSelection()" type="button" class="btn btn-secondary">Highlight</button><br/>
                 <button onclick="increaseFontSize()" type="button" class="btn btn-secondary">Size up</button><br/>
                 <button onclick="decreaseFontSize()" type="button" class="btn btn-secondary">Size down</button><br/>
+
             </div>
             <% for(Chapter chapter : chapterList) { %>
             <%
