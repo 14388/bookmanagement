@@ -119,6 +119,14 @@ function deleteBook(bookID) {
         url: 'http://localhost:8080/book',
         data: JSON.stringify(messageJSON),
         success: function(response) {
+            var bookCodeList = JSON.parse(localStorage["book-list"]);
+            for(var i = 0; i < bookCodeList.length; i++) {
+                if(bookCodeList[i] == " " + bookID + " " ) {
+                    bookCodeList.splice(i,1);
+                }
+            }
+            bookCodeList = JSON.stringify(bookCodeList);
+            localStorage.setItem("book-list", bookCodeList);
             location.reload();
         }
     })
