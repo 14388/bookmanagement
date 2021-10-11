@@ -56,45 +56,44 @@ function highlightSelection(){
     var selectedText = selection.toString();
     var startPoint = range.startOffset;
     var endPoint = range.endOffset;
-    var anchorTag = range.startContainer.parentNode;
-    var focusTag = range.endContainer.parentNode;
+    var startTag = range.startContainer.parentNode;
+    var endTag = range.endContainer.parentNode;
     if(selectedText.length === (endPoint - startPoint)){
         highlighted = true;
-        console.log(document.getElementById("content1").innerHTML);
-        if (anchorTag.className !== "highlight") {
+        if (startTag.className !== "highlight") {
             highlightText(range);
         } else {
-            var afterText = selectedText + "<span class='highlight'>" + anchorTag.innerHTML.substr(endPoint) + "</span>";
-            anchorTag.innerHTML = anchorTag.innerHTML.substr(0, startPoint);
-            anchorTag.insertAdjacentHTML('afterend', afterText);
+            var afterText = selectedText + "<span class='highlight'>" + startTag.innerHTML.substr(endPoint) + "</span>";
+            startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+            startTag.insertAdjacentHTML('afterend', afterText);
         }
     }else{
-        if(anchorTag.className !== "highlight" && focusTag.className !== "highlight"){
+        if(startTag.className !== "highlight" && endTag.className !== "highlight"){
             highlightText(range);
             highlighted = true;
         }
     }
-    if (anchorTag.className === "highlight" && focusTag.className === 'highlight' && !highlighted) {
+    if (startTag.className === "highlight" && endTag.className === 'highlight' && !highlighted) {
         highlightText(range);
         highlighted = true;
     }
-    if (anchorTag.className === "highlight" && !highlighted){
+    if (startTag.className === "highlight" && !highlighted){
         highlighted = true;
-        var anchorTag_remains = anchorTag.innerHTML.substr(0, startPoint);
-        var anchorTag_selected = anchorTag.innerHTML.substr(startPoint);
-        var outer_text = selectedText.substr(anchorTag_selected.length, selectedText.length);
+        var startTag_remains = startTag.innerHTML.substr(0, startPoint);
+        var startTag_selected = startTag.innerHTML.substr(startPoint);
+        var outer_text = selectedText.substr(startTag_selected.length, selectedText.length);
         range.deleteContents();
-        anchorTag.innerHTML = anchorTag_remains;
-        anchorTag.insertAdjacentHTML('afterend', anchorTag_selected + outer_text);
+        startTag.innerHTML = startTag_remains;
+        startTag.insertAdjacentHTML('afterend', startTag_selected + outer_text);
     }
-    if (focusTag.className === "highlight" && !highlighted){
+    if (endTag.className === "highlight" && !highlighted){
         highlighted = true;
-        var focusTag_remains = focusTag.innerHTML.substr(endPoint, focusTag.length);
-        var focusTag_selected = focusTag.innerHTML.substr(0, endPoint);
-        var outer_text = selectedText.substr(0, selectedText.length - focusTag_selected.length);
+        var endTag_remains = endTag.innerHTML.substr(endPoint, endTag.length);
+        var endTag_selected = endTag.innerHTML.substr(0, endPoint);
+        var outer_text = selectedText.substr(0, selectedText.length - endTag_selected.length);
         range.deleteContents();
-        focusTag.innerHTML = focusTag_remains;
-        focusTag.insertAdjacentHTML('beforeBegin', outer_text + focusTag_selected);
+        endTag.innerHTML = endTag_remains;
+        endTag.insertAdjacentHTML('beforeBegin', outer_text + endTag_selected);
     }
     $('.highlight').each(function(){
         if($(this).html() === ''){
@@ -116,7 +115,6 @@ function increaseFontSize(){
     var content_list = document.getElementsByClassName("chapter-content");
     for(var i=0; i<content_list.length; i++){
         var currentFontsize = parseInt(getComputedStyle(content_list[i]).fontSize);
-        console.log(currentFontsize);
         if(currentFontsize < maxSize){
             content_list[i].style.fontSize = currentFontsize + 2 + "px";
         }
@@ -126,7 +124,6 @@ function decreaseFontSize(){
     var content_list = document.getElementsByClassName("chapter-content");
     for(var i=0; i<content_list.length; i++){
         var currentFontsize = parseInt(getComputedStyle(content_list[i]).fontSize);
-        console.log(currentFontsize);
         if(currentFontsize > minSize){
             content_list[i].style.fontSize = currentFontsize - 2 + "px";
         }
