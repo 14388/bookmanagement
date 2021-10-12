@@ -7,8 +7,8 @@ if(localStorage.getItem("author") == null) {
     location.reload();
 } else {
     var welcomeTitle = document.getElementById("welcome-title");
-    welcomeTitle.insertAdjacentHTML('afterbegin', "<h1> Hello " + localStorage["author"] + "</h1>");
-    welcomeTitle.insertAdjacentHTML('afterend',"<button type=\"button\" id=\"create-book-btn\"><i class = \"far fa-plus-square\"></i> Create new book</button>");
+    welcomeTitle.insertAdjacentHTML('afterbegin', "<h1 style='color: rgba(84,84,84,1.00);text-decoration-line: underline'> Hello " + localStorage["author"] + "</h1>");
+    welcomeTitle.insertAdjacentHTML('afterend',"<button style='height:40px;border-radius: 5px' type=\"button\" id=\"create-book-btn\"><i class = \"far fa-plus-square\"></i> Create new book</button>");
 }
 
 
@@ -119,7 +119,7 @@ function deleteBook(bookID) {
         url: 'http://localhost:8080/book',
         data: JSON.stringify(messageJSON),
         success: function(response) {
-            var bookCodeList = JSON.parse(localStorage["book-list"]);
+			var bookCodeList = JSON.parse(localStorage["book-list"]);
             for(var i = 0; i < bookCodeList.length; i++) {
                 if(bookCodeList[i] == " " + bookID + " " ) {
                     bookCodeList.splice(i,1);
