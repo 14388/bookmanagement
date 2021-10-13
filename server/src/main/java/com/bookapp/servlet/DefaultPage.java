@@ -14,7 +14,7 @@ public class DefaultPage extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         try {
-            request.getRequestDispatcher("index.jsp").forward(request, response);
+            request.getRequestDispatcher("index.html").forward(request, response);
         } catch (ServletException exception) {
             exception.printStackTrace();
         } catch(IOException exception) {

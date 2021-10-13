@@ -26,6 +26,7 @@ public class BookDAO {
     private final String extraScript = "SET @ROW = 0";
     private final String reorderChapterNumberScript = "UPDATE BookChapter SET CNum = @ROW := @ROW+1 WHERE BCode = ? ORDER BY Bcode ASC";
     private final String deleteBookScript = "DELETE FROM Book WHERE BCode = ?";
+    private final String getChapter = "SELECT CTitle, CContent FROM BookChapter WHERE BCode = ? AND CNum = ?";
 
 
     public List<Book> getInfoAll() {
@@ -178,7 +179,7 @@ public class BookDAO {
         }
     }
 
-    public  int createNewBook(String bookName, String authorName) {
+    public int createNewBook(String bookName, String authorName) {
         Connection connection = new DBUtil().getConnection();
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(createBookScript);
@@ -359,6 +360,35 @@ public class BookDAO {
             preparedStatement.close();
         } catch(Exception exception) {
             exception.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException sqlException) {
+                    sqlException.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public Chapter getChapter(int bookCode, int chapterCode) {
+        Connection connection = new DBUtil().getConnection();
+        try {
+            Chapter chapter = new Chapter();
+            PreparedStatement preparedStatement = connection.prepareStatement(getChapter);
+            preparedStatement.setInt(1, bookCode);
+            preparedStatement.setInt(2, chapterCode);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                String title = resultSet.getString(1);
+                String content = resultSet.getString(2);
+                chapter = new Chapter(chapterCode, title, content);
+            }
+            preparedStatement.close();
+            return chapter;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         } finally {
             if (connection != null) {
                 try {

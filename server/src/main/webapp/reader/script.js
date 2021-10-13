@@ -1,53 +1,33 @@
-/* Button */
-let isBold = false;
-let isItalic = false;
+var chapterContainer = document.getElementById("chapter-content");
+
+function renderChapterContent() {
+    if (localStorage["current-book-read-chapter"] !== null) {
+        var chapterUrl = 'http://localhost:8080/getChapter?bcode=' + localStorage["current-read-book"] + "&index=" + localStorage["current-read-book-chapter"];
+        console.log(chapterUrl)
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: chapterUrl,
+            success: function(data) {
+                renderChapter(data);
+            }})
+    }
+}
+
+function renderChapter(data) {
+    let html = "";
+    html += "<h3>" + data.title + "</h3>" +
+        "<div class='chapter-content'> " + data.content +
+        "</div>"
+    chapterContainer.innerHTML += html;
+}
+
+renderChapterContent();
+
 let highlighted = false;
 let maxSize = 30; //px
 let minSize = 10; //px
-
-// function toItalic() {
-//     let style = 'italic';
-//     changeFontStyle(style)
-// }
-//
-// function changeToNormal() {
-//     let style = 'normal';
-//     changeFontStyle(style)
-// }
-
-function toBold() {
-    if (isBold === false) {
-        changeFontWeight('bold');
-        isBold = true;
-    } else {
-        changeFontWeight('normal')
-        isBold = false;
-    }
-}
-
-function changeFontWeight(weight) {
-    var chapter = document.getElementsByClassName("chapter-content");
-    for (let i = 0; i < chapter.length; i++) {
-        chapter[i].style.fontWeight = weight;
-    }
-}
-
-function toItalic(style) {
-    if (isItalic === false) {
-        changeFontStyle('italic');
-        isItalic = true;
-    } else {
-        changeFontStyle('normal')
-        isItalic = false;
-    }
-}
-
-function changeFontStyle(style) {
-    var chapter = document.getElementsByClassName("chapter-content");
-    for (let i = 0; i < chapter.length; i++) {
-        chapter[i].style.fontStyle = style;
-    }
-}
 
 function highlightSelection(){
     var highlighted = false;
