@@ -2,8 +2,8 @@ var saveContentButton = document.getElementById("save-content-btn");
 var title = document.getElementById("title");
 
 function initializePage() {
-    title.insertAdjacentHTML('afterbegin', "<h2> Chapter " + localStorage["browsing-chapter-num"] + " - " + localStorage["browsing-chapter-title"]);
-    title.insertAdjacentHTML('afterbegin', "<h1> Book " + localStorage["browsing-book-name"]);
+    title.insertAdjacentHTML('afterbegin', "<h2 style='color: rgba(84,84,84,1.00);text-decoration-line: underline'> Chapter " + localStorage["browsing-chapter-num"] + " - " + localStorage["browsing-chapter-title"]);
+    title.insertAdjacentHTML('afterbegin', "<h1 style='color: rgba(84,84,84,1.00);text-decoration-line: underline'> Book " + localStorage["browsing-book-name"]);
 }
 
 function initializeChapterContent() {

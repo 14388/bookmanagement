@@ -6,10 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rich Text Editor in JS</title>
     <script src="https://kit.fontawesome.com/4b13903f75.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="author.css">
 </head>
 <body onLoad="enableEditMode();" style="display: table-cell; vertical-align: middle; padding-top: 20px;">
-<div id="title"></div>
-<div>
+	<div class="container-fluid">
+		<div class="head">
+			<div class="container">
+				<a href="index.jsp">
+					<img class="title" src="img/book.jpg" height="50">
+					<h3 class="title">Books for Author</h3>
+				</a>
+				<a href="https://vgu.edu.vn/"><img style="float: right" height="45" src="img/vgu.png"></a>
+			</div>
+		</div>
+	</div>
+<div class="container box">
+	<div id="title"></div>
+<div >
     <button onclick = "execCmd('bold');"><i class="fas fa-bold "></i></button>
     <button onclick = "execCmd('italic');"><i class="fas fa-italic "></i></button>
     <button onclick = "execCmd('underline');"><i class="fas fa-underline "></i></button>
@@ -40,8 +53,10 @@
     Fore Color: <input type="color" onchange="execCommandWithArg('foreColor', this.value);">
     Background: <input type="color" onchange="execCommandWithArg('hiliteColor', this.value);">
 </div>
-<iframe name = "richTextField" style="width:1500px; height:500px;"></iframe><br/>
-<button type="button" id="save-content-btn">Save</button>
+	
+<iframe name = "richTextField" style="width:100%; height:500px;"></iframe><br/>
+<button type="button" id="save-content-btn" style="border-radius: 5px;height: 20px;">Save</button>
+</div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="editor.script.js"></script>
 </body>
