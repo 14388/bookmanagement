@@ -114,7 +114,7 @@ function decreaseFontSize(){
 
 function bookScroll(){
     var bookmark = localStorage.getItem(bmark);
-    if (bookmark)window.scrollTo(0, bmark);
+    if (bookmark)window.scrollTo(localStorage.getItem(bmark));
 
 };
 window.onbeforeunload = function(e) {
