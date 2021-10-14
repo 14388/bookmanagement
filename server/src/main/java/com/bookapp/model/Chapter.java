@@ -4,6 +4,7 @@ public class Chapter {
     int index;
     String title;
     String content;
+    public Chapter() {}
 
     public Chapter(int index, String title, String content) {
         this.index = index;

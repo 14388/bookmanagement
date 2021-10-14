@@ -3,6 +3,7 @@ package com.bookapp.servlet;
 import com.bookapp.model.Book;
 import com.bookapp.model.Chapter;
 import com.bookapp.serivce.Book.BookService;
+import com.bookapp.util.JSONUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,21 +14,13 @@ import java.util.List;
 
 public class GetBookChapter extends HttpServlet {
     BookService bookService = new BookService();
+    JSONUtil jsonUtil = new JSONUtil();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            int bookCode = Integer.parseInt(request.getParameter("bcode"));
-            int chapterIndex = Integer.parseInt(request.getParameter("index"));
-            Book book = bookService.get(bookCode);
-            List<Chapter> chapterList = book.getChapterList();
-            Chapter chapter = chapterList.get(chapterIndex);
-            request.setAttribute("chapter", chapter);
-            request.getRequestDispatcher("reader/reader.jsp").forward(request, response);
-        } catch (ServletException exception) {
-            exception.printStackTrace();
-        } catch(IOException exception) {
-            exception.printStackTrace();
-        }
+        int bookCode = Integer.parseInt(request.getParameter("bcode"));
+        int chapterIndex = Integer.parseInt(request.getParameter("index"));
+        Chapter chapter = bookService.getChapter(bookCode, chapterIndex);
+        jsonUtil.writeObjectAsJSONResponse(response, chapter);
     }
 }

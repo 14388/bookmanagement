@@ -59,4 +59,8 @@ public class BookService {
     public void deleteBook(int bookCode) {
         bookDAO.deleteBook(bookCode);
     }
+
+    public Chapter getChapter(int bookCode, int chapterNumber) {
+        return bookDAO.getChapter(bookCode, chapterNumber);
+    }
 }
