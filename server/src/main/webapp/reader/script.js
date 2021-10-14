@@ -1,4 +1,5 @@
 var chapterContainer = document.getElementById("chapter-content");
+var bmark = "bookCode" + localStorage["current-read-book"] + "chapterCode" + localStorage["current-read-book-chapter"];
 
 function renderChapterContent() {
     if (localStorage["current-book-read-chapter"] !== null) {
@@ -21,6 +22,7 @@ function renderChapter(data) {
         "<div class='chapter-content'> " + data.content +
         "</div>"
     chapterContainer.innerHTML += html;
+    bookScroll();
 }
 
 renderChapterContent();
@@ -110,14 +112,11 @@ function decreaseFontSize(){
     }
 }
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    var scrollpos = localStorage.getItem('scrollpos');
-    if (scrollpos) window.scrollTo(0, scrollpos);
-});
-window.onbeforeunload = function(e) {
-    localStorage.setItem('scrollpos', window.scrollY);
+function bookScroll(){
+    var bookmark = localStorage.getItem(bmark);
+    if (bookmark)window.scrollTo(0, bmark);
+
 };
-window.addEventListener("scroll", function(event) {
-    let scroll = this.scrollY;
-    console.log(scroll);
-})
+window.onbeforeunload = function(e) {
+    localStorage.setItem(bmark, window.scrollY);
+};
