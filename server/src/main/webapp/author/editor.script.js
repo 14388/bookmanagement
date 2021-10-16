@@ -111,7 +111,6 @@ function italic() {
                             if(childNodesList[childNodesList.length - 1].tagName === "I") {
                                 break;
                             }
-                            console.log(childNodesList[j].outerHTML);
                             if(!selectedText.includes("<i>")) {
                                 break;
                             }
@@ -151,7 +150,6 @@ function italic() {
 
                         }
                         if(childNodesList[childNodesList.length - 1].tagName !== "I" && selectedText.includes("<i>")) {
-                            console.log("Hello from the other side");
                             parentNode.removeChild(childNodesList[j]);
                         }
 
@@ -274,7 +272,6 @@ function bold() {
                             if(childNodesList[childNodesList.length - 1].tagName === "B") {
                                 break;
                             }
-                            console.log(childNodesList[j].outerHTML);
                             if(!selectedText.includes("<b>")) {
                                 break;
                             }
@@ -407,7 +404,6 @@ function underline() {
             }
             nodeCounter = nodeCounter + 1;
         }
-        console.log();
 
         while(startTag.tagName !== "HTML" && endTag.tagName !== "HTML") {
 
@@ -439,7 +435,6 @@ function underline() {
                             if(childNodesList[childNodesList.length - 1].tagName === "U") {
                                 break;
                             }
-                            console.log(childNodesList[j].outerHTML);
                             if(!selectedText.includes("<u>")) {
                                 break;
                             }
@@ -479,7 +474,6 @@ function underline() {
 
                         }
                         if(childNodesList[childNodesList.length - 1].tagName !== "U" && selectedText.includes("<u>")) {
-                            console.log("Hello from the other side");
                             parentNode.removeChild(childNodesList[j]);
                         }
                     }
@@ -556,7 +550,6 @@ function changeFontStyle(font) {
         var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
         var endTag = range.endContainer.parentNode;
         if(childNodesList !== null) {
-            console.log(childNodesList)
             for(var i = 0; i < childNodesList.length; i++) {
                 if(childNodesList[i].className === "font-style") {
                     const parentNode = childNodesList[i].parentNode;
