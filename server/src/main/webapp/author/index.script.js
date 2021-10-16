@@ -83,7 +83,7 @@ function renderBook(bookCode, bookName) {
 function editBook(bookCode,bookName) {
     localStorage.setItem("browsing-book-name", bookName);
     localStorage.setItem("browsing-book-id", bookCode);
-    window.location.href = 'chapter.jsp';
+    window.location.href = 'chapter.html';
 }
 
 function changeBookName(bookID) {
