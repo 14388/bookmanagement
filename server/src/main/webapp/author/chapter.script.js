@@ -35,7 +35,7 @@ function renderChapter(chapterNumber, chapterTitle) {
 function editChapter(chapterNumber, chapterTitle) {
     localStorage.setItem("browsing-chapter-title", chapterTitle);
     localStorage.setItem("browsing-chapter-num", chapterNumber);
-    window.location.href = 'editor.jsp';
+    window.location.href = 'editor.html';
 }
 
 createChapterButton.onclick = function() {
