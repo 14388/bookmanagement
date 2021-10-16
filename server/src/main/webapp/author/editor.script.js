@@ -115,7 +115,7 @@ function italic() {
                             if(!selectedText.includes("<i>")) {
                                 break;
                             }
-                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "U" || startTag.tagName === "B" || startTag.tagName === "SPAN") {
+                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "U" || startTag.tagName === "B" || startTag.tagName === "SPAN" || startTag.tagName === "DIV") {
                                 while(parentNode.tagName !== "BODY") {
                                     if(childNodesList[j].nextSibling === null || childNodesList[j].nextSibling.nodeType === 3) {
                                         break;
@@ -165,6 +165,55 @@ function italic() {
             range.insertNode(newNode);
         }
         else {
+            var selectedTextString = selection.toString();
+            var tempString = selectedTextString;
+            var openingTag = "";
+            var closingTag = "";
+            var startTag = range.startContainer.parentNode;
+            var endTag = range.endContainer.parentNode;
+            var startPoint = range.startOffset;
+            var endPoint = range.endOffset;
+            while(startTag.tagName !== "BODY" && endTag.tagName !== "BODY") {
+                if(startTag.tagname === "I" || endTag.tagName === "I"){
+                    openingTag += "<i>";
+                    closingTag += "</i>";
+                    break;
+                } else {
+                    if(startTag.tagName === "B") {
+                        openingTag += "<b>";
+                        closingTag += "</b>";
+                    } else if(startTag.tagName === "U") {
+                        openingTag += "<u>";
+                        closingTag += "</u>"
+                    }
+                }
+                startTag = startTag.parentNode;
+                endTag = endTag.parentNode;
+            }
+            var startTagTextContent = startTag.textContent;
+            startTag = range.startContainer.parentNode;
+            if(startTagTextContent.indexOf(selectedTextString) === 0){
+                var finalString = selectedTextString + openingTag + startTag.innerHTML.substr(endPoint);
+                startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                startTag.insertAdjacentHTML('afterend', finalString);
+                startTag.outerHTML = '';
+            }
+            else {
+                var selectedTextStringReversed = reverse(selectedTextString);
+                if(reverse(startTagTextContent).indexOf(selectedTextStringReversed) === 0) {
+                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                    var finalString = startTag.outerHTML + tempString;
+                    startTag.insertAdjacentHTML('afterend', finalString)
+                    startTag.outerHTML = '';
+                }
+                else {
+                    var finalString =  tempString + openingTag + startTag.innerHTML.substr(endPoint);
+                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                    finalString = endTag.outerHTML + finalString
+                    startTag.insertAdjacentHTML('afterend', finalString);
+                    startTag.outerHTML = '';
+                }
+            }
 
         }
     }
@@ -229,7 +278,7 @@ function bold() {
                             if(!selectedText.includes("<b>")) {
                                 break;
                             }
-                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "U" || startTag.tagName === "I" || startTag.tagName === "SPAN") {
+                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "U" || startTag.tagName === "I" || startTag.tagName === "SPAN" || startTag.tagName === "DIV") {
                                 while(parentNode.tagName !== "BODY") {
                                     if(childNodesList[j].nextSibling === null || childNodesList[j].nextSibling.nodeType === 3) {
                                         break;
@@ -278,6 +327,55 @@ function bold() {
             range.insertNode(newNode);
         }
         else {
+            var selectedTextString = selection.toString();
+            var tempString = selectedTextString;
+            var openingTag = "";
+            var closingTag = "";
+            var startTag = range.startContainer.parentNode;
+            var endTag = range.endContainer.parentNode;
+            var startPoint = range.startOffset;
+            var endPoint = range.endOffset;
+            while(startTag.tagName !== "BODY" && endTag.tagName !== "BODY") {
+                if(startTag.tagname === "B" || endTag.tagName === "B"){
+                    openingTag += "<b>";
+                    closingTag += "</b>";
+                    break;
+                } else {
+                    if(startTag.tagName === "U") {
+                        openingTag += "<u>";
+                        closingTag += "</u>";
+                    } else if(startTag.tagName === "I") {
+                        openingTag += "<i>";
+                        closingTag += "</i>"
+                    }
+                }
+                startTag = startTag.parentNode;
+                endTag = endTag.parentNode;
+            }
+            var startTagTextContent = startTag.textContent;
+            startTag = range.startContainer.parentNode;
+            if(startTagTextContent.indexOf(selectedTextString) === 0){
+                var finalString = selectedTextString + openingTag + startTag.innerHTML.substr(endPoint);
+                startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                startTag.insertAdjacentHTML('afterend', finalString);
+                startTag.outerHTML = '';
+            }
+            else {
+                var selectedTextStringReversed = reverse(selectedTextString);
+                if(reverse(startTagTextContent).indexOf(selectedTextStringReversed) === 0) {
+                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                    var finalString = startTag.outerHTML + tempString;
+                    startTag.insertAdjacentHTML('afterend', finalString)
+                    startTag.outerHTML = '';
+                }
+                else {
+                    var finalString =  tempString + openingTag + startTag.innerHTML.substr(endPoint);
+                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                    finalString = endTag.outerHTML + finalString
+                    startTag.insertAdjacentHTML('afterend', finalString);
+                    startTag.outerHTML = '';
+                }
+            }
 
         }
     }
@@ -296,6 +394,7 @@ function underline() {
         var outerNode = null;
         var selectedText = "";
         var nodeCounter = 0;
+        var condition = 0;
 
         while(typeof(range.cloneContents().childNodes[nodeCounter]) !== 'undefined') {
             if(typeof(range.cloneContents().childNodes[nodeCounter].outerHTML) !== 'undefined') {
@@ -344,7 +443,7 @@ function underline() {
                             if(!selectedText.includes("<u>")) {
                                 break;
                             }
-                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "B" || startTag.tagName === "I" || startTag.tagName === "SPAN") {
+                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "B" || startTag.tagName === "I" || startTag.tagName === "SPAN" || startTag.tagName === "DIV") {
                                 while(parentNode.tagName !== "BODY") {
                                     if(childNodesList[j].nextSibling === null || childNodesList[j].nextSibling.nodeType === 3) {
                                         break;
@@ -392,6 +491,55 @@ function underline() {
             range.insertNode(newNode);
         }
         else {
+            var selectedTextString = selection.toString();
+            var tempString = selectedTextString;
+            var openingTag = "";
+            var closingTag = "";
+            var startTag = range.startContainer.parentNode;
+            var endTag = range.endContainer.parentNode;
+            var startPoint = range.startOffset;
+            var endPoint = range.endOffset;
+            while(startTag.tagName !== "BODY" && endTag.tagName !== "BODY") {
+                if(startTag.tagname === "U" || endTag.tagName === "U"){
+                    openingTag += "<u>";
+                    closingTag += "</u>";
+                    break;
+                } else {
+                    if(startTag.tagName === "B") {
+                        openingTag += "<b>";
+                        closingTag += "</b>";
+                    } else if(startTag.tagName === "I") {
+                        openingTag += "<i>";
+                        closingTag += "</i>"
+                    }
+                }
+                startTag = startTag.parentNode;
+                endTag = endTag.parentNode;
+            }
+            var startTagTextContent = startTag.textContent;
+            startTag = range.startContainer.parentNode;
+            if(startTagTextContent.indexOf(selectedTextString) === 0){
+                var finalString = selectedTextString + openingTag + startTag.innerHTML.substr(endPoint);
+                startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                startTag.insertAdjacentHTML('afterend', finalString);
+                startTag.outerHTML = '';
+            }
+            else {
+                var selectedTextStringReversed = reverse(selectedTextString);
+                if(reverse(startTagTextContent).indexOf(selectedTextStringReversed) === 0) {
+                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                    var finalString = startTag.outerHTML + tempString;
+                    startTag.insertAdjacentHTML('afterend', finalString)
+                    startTag.outerHTML = '';
+                }
+                else {
+                    var finalString =  tempString + openingTag + startTag.innerHTML.substr(endPoint);
+                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
+                    finalString = endTag.outerHTML + finalString
+                    startTag.insertAdjacentHTML('afterend', finalString);
+                    startTag.outerHTML = '';
+                }
+            }
 
         }
     }
@@ -594,6 +742,9 @@ function getNumberOfElementNode(nodesList, elementNode) {
     return count;
 }
 
+function reverse(s){
+    return [...s].reverse().join("");
+}
 
 initializePage();
 initializeChapterContent();
