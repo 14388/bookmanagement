@@ -1,5 +1,6 @@
 var chapterContainer = document.getElementById("chapter-content");
 var bmark = "bookCode" + localStorage["current-read-book"] + "chapterCode" + localStorage["current-read-book-chapter"];
+var hl = "bCode" + localStorage["current-read-book"] + "cCode" + localStorage["current-read-book-chapter"];
 
 function renderChapterContent() {
     if (localStorage["current-book-read-chapter"] !== null) {
@@ -18,8 +19,9 @@ function renderChapterContent() {
 
 function renderChapter(data) {
     let html = "";
+    let chapterContent = loadHighlight(data.content)
     html += "<h3>" + data.title + "</h3>" +
-        "<div class='chapter-content'> " + data.content +
+        "<div class='chapter-content'> " + chapterContent +
         "</div>"
     chapterContainer.innerHTML += html;
     bookScroll();
@@ -111,7 +113,56 @@ function decreaseFontSize(){
         }
     }
 }
+function getHighlightPos() {
+    var str = document.getElementsByClassName("chapter-content")[0].innerHTML.trim()
+    let arr = str.match(/<span class="highlight">[\w .,]+<\/span>/g) // find all content inside highlight
+    if(arr !== null){
+        let arrWord = arr.map(s => s.replace(/<\/?span( class="highlight")?>/g, ''))//highlight text
+        let arr2 = str.split(/<span class="highlight">[\w .,]+<\/span>/) // return non-highlight text
+        arr2 = arr2.map(s => s.replace(/<\/?(.*?)>/g, '')) //delete all tag
+        let idxArr = []
+        let currentLen = 0
+        for (let i = 0; i < arr.length; i++) {
+            currentLen += arr2[i].length
+            let idx = {
+                start: currentLen,
+                end: currentLen + arrWord[i].length
+            }
+            currentLen += arrWord[i].length
+            idxArr.push(idx)
+        }
+        return idxArr
+    }
+    return null
+}
 
+function loadHighlight(html) {
+    html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
+        let trMatch = match.trim()
+        return trMatch;
+    })
+    console.log(html)
+    let arr = JSON.parse(localStorage.getItem(hl))
+    if(arr !== null) {
+        for (var i = 0; i < arr.length; i++) {
+            var start = arr[i].start
+            var end = arr[i].end
+            var reg = /<.*?>/g
+            while ((tag = reg.exec(html)) !== null) {
+                if (tag.index < start) {
+                    start += tag.toString().length
+                    end += tag.toString().length
+                }
+            }
+            if(html[0] === "\r" | html[0] === "\n"){
+                html = html.substr(0, start+1) + "<span class='highlight'>" + html.substr(start+1, end - start) + "</span>" + html.substr(end + 1)
+            }else{
+                html = html.substr(0, start) + "<span class='highlight'>" + html.substr(start, end - start) + "</span>" + html.substr(end)
+            }
+        }
+    }
+    return html
+}
 function bookScroll(){
     var bookmark = localStorage.getItem(bmark);
     if (bookmark) {
@@ -119,6 +170,8 @@ function bookScroll(){
     }
 
 };
+
 window.onbeforeunload = function(e) {
     localStorage.setItem(bmark, window.scrollY);
+    localStorage.setItem(hl, JSON.stringify(getHighlightPos()))
 };
