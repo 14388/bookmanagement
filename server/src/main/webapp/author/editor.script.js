@@ -138,11 +138,11 @@ function italic() {
                                         parentNode = childNodesList[j].parentNode;
                                     }
                                 }
-                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalUnderlineElementNode) {
+                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalItalicElementNode) {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
                                     continue;
                                 }
-                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
+                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalItalicElementNode){
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
@@ -303,11 +303,11 @@ function bold() {
                                         parentNode = childNodesList[j].parentNode;
                                     }
                                 }
-                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalUnderlineElementNode) {
+                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalBoldElementNode) {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
                                     continue;
                                 }
-                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
+                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalBoldElementNode){
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
@@ -403,11 +403,9 @@ function underline() {
 
         while(typeof(range.cloneContents().childNodes[nodeCounter]) !== 'undefined') {
             if(typeof(range.cloneContents().childNodes[nodeCounter].outerHTML) !== 'undefined') {
-                var tempText = range.cloneContents().childNodes[nodeCounter].outerHTML;
                 selectedText += range.cloneContents().childNodes[nodeCounter].outerHTML;
             }
             else if(typeof(range.cloneContents().childNodes[nodeCounter].textContent) !== 'undefined'){
-                var tempText2 = range.cloneContents().childNodes[nodeCounter].textContent;
                 selectedText += range.cloneContents().childNodes[nodeCounter].textContent;
             }
             nodeCounter = nodeCounter + 1;
