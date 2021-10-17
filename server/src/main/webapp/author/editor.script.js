@@ -138,8 +138,12 @@ function italic() {
                                         parentNode = childNodesList[j].parentNode;
                                     }
                                 }
-                                if((startTag.tagName === "HTML" || endTag.tagName === "HTML") && counter === totalItalicElementNode) {
+                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalUnderlineElementNode) {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
+                                    continue;
+                                }
+                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
+                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
                                 parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
@@ -299,8 +303,12 @@ function bold() {
                                         parentNode = childNodesList[j].parentNode;
                                     }
                                 }
-                                if((startTag.tagName === "HTML" || endTag.tagName === "HTML") && counter === totalBoldElementNode) {
+                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalUnderlineElementNode) {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
+                                    continue;
+                                }
+                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
+                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
                                 parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
@@ -462,8 +470,12 @@ function underline() {
                                         parentNode = childNodesList[j].parentNode;
                                     }
                                 }
-                                if((startTag.tagName === "HTML" || endTag.tagName === "HTML") && counter === totalUnderlineElementNode) {
+                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalUnderlineElementNode) {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
+                                    continue;
+                                }
+                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
+                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
                                 parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
