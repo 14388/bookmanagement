@@ -659,6 +659,42 @@ function changeFontColour(colour) {
     }
 }
 
+function textAlign(textAlignment) {
+    const selection = richTextField.document.getSelection();
+    if (!selection.isCollapsed){
+        const range = selection.getRangeAt(0);
+        var startTag = range.startContainer.parentNode;
+        var firstChildNodesList = getNodesInRange(range);
+        var secondChildNodesList = getNodesInRangeForSpan(range);
+        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
+        if(childNodesList !== null) {
+            for(var i = 0; i < childNodesList.length; i++) {
+                if(childNodesList[i].className === "text-align") {
+                    const parentNode = childNodesList[i].parentNode;
+                    while(childNodesList[i].firstChild) {
+                        if(startTag.className ===  "text-align") {
+                            break;
+                        }
+                        else {
+                            parentNode.insertBefore(childNodesList[i].firstChild, childNodesList[i]);
+                        }
+                    }
+                    if(startTag.className !== "text-align") {
+                        parentNode.removeChild(childNodesList[i]);
+                    }
+
+                }
+
+            }
+        }
+        const div = document.createElement('div');
+        div.className = "text-align";
+        div.style = 'text-align: ' + textAlignment;
+        div.appendChild(range.extractContents());
+        range.insertNode(div);
+    }
+}
+
 function combineTwoNodesList(firstNodesList, secondNodesList) {
     var completeNodesList = firstNodesList;
     for(var i = 0; i < secondNodesList.length; i++) {

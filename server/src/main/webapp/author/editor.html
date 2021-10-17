@@ -13,6 +13,10 @@
     <button onclick = "bold()"><i class="fas fa-bold "></i></button>
     <button onclick = "italic();"><i class="fas fa-italic "></i></button>
     <button onclick = "underline()"><i class="fas fa-underline "></i></button>
+    <button onclick = "textAlign('left');"><i class="fas fa-align-left "></i></button>
+    <button onclick = "textAlign('center');"><i class="fas fa-align-center "></i></button>
+    <button onclick = "textAlign('right');"><i class="fas fa-align-right "></i></button>
+    <button onclick = "textAlign('justify');"><i class="fas fa-align-justify "></i></button>
     Font:
     <select onchange = "changeFontStyle(this);">
         <option value="Arial">Arial</option>
@@ -37,7 +41,7 @@
         <option value="19px">19</option>
         <option value="20px">20</option>
     </select>
-    Fore Color: <input type="color" onclick="changeFontColour(this);">
+    Font Colour: <input type="color" onclick="changeFontColour(this);">
 </div>
 <iframe name = "richTextField" style="width:1500px; height:500px;"></iframe><br/>
 <button type="button" id="save-content-btn">Submit</button>
