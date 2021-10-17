@@ -96,20 +96,20 @@ function highlightText(range){
 }
 
 function increaseFontSize(){
-    var content_list = document.getElementsByClassName("chapter-content");
-    for(var i=0; i<content_list.length; i++){
-        var currentFontsize = parseInt(getComputedStyle(content_list[i]).fontSize);
+    var fSize_list = document.getElementsByClassName("font-size");
+    for(var i=0; i<fSize_list.length; i++){
+        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
         if(currentFontsize < maxSize){
-            content_list[i].style.fontSize = currentFontsize + 2 + "px";
+            fSize_list[i].style.fontSize = currentFontsize + 2 + "px";
         }
     }
 }
 function decreaseFontSize(){
-    var content_list = document.getElementsByClassName("chapter-content");
-    for(var i=0; i<content_list.length; i++){
-        var currentFontsize = parseInt(getComputedStyle(content_list[i]).fontSize);
+    var fSize_list = document.getElementsByClassName("font-size");
+    for(var i=0; i<fSize_list.length; i++){
+        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
         if(currentFontsize > minSize){
-            content_list[i].style.fontSize = currentFontsize - 2 + "px";
+            fSize_list[i].style.fontSize = currentFontsize - 2 + "px";
         }
     }
 }
