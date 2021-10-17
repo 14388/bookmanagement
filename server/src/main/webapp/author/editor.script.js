@@ -146,6 +146,10 @@ function italic() {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
+                                else if((startTag.tagName === "HTML" && endTag.tagName === "HTML") && counter === totalItalicElementNode) {
+                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
+                                    continue;
+                                }
                                 parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
                             }
                             else {
@@ -311,6 +315,10 @@ function bold() {
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
                                     continue;
                                 }
+                                else if((startTag.tagName === "HTML" && endTag.tagName === "HTML") && counter === totalBoldElementNode) {
+                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
+                                    continue;
+                                }
                                 parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
                             }
                             else {
@@ -474,6 +482,10 @@ function underline() {
                                 }
                                 else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
                                     parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
+                                    continue;
+                                }
+                                else if((startTag.tagName === "HTML" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode) {
+                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
                                     continue;
                                 }
                                 parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
