@@ -98,7 +98,7 @@ function highlightText(range){
 function increaseFontSize(){
     var content = document.getElementsByClassName("chapter-content");
     var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(currentFontsize < maxSize){
+    if(contentFsize < maxSize){
             content[0].style.fontSize = contentFSize + 2 + "px";
     }
     var fSize_list = document.getElementsByClassName("font-size");
@@ -112,7 +112,7 @@ function increaseFontSize(){
 function decreaseFontSize(){
     var content = document.getElementsByClassName("chapter-content");
     var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(currentFontsize > minSize){
+    if(contentFSize > minSize){
             content[0].style.fontSize = contentFSize - 2 + "px";
     }
     var fSize_list = document.getElementsByClassName("font-size");
