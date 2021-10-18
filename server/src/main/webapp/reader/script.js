@@ -30,8 +30,8 @@ function renderChapter(data) {
 renderChapterContent();
 
 let highlighted = false;
-let maxSize = 100; //px
-let minSize = 0; //px
+let maxSize = 30; //px
+let minSize = 10; //px
 
 function highlightSelection(){
     var highlighted = false;
@@ -96,11 +96,6 @@ function highlightText(range){
 }
 
 function increaseFontSize(){
-    var content = document.getElementsByClassName("chapter-content");
-    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(contentFsize < maxSize){
-            content[0].style.fontSize = contentFSize + 2 + "px";
-    }
     var fSize_list = document.getElementsByClassName("font-size");
     for(var i=0; i<fSize_list.length; i++){
         var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
@@ -110,11 +105,6 @@ function increaseFontSize(){
     }
 }
 function decreaseFontSize(){
-    var content = document.getElementsByClassName("chapter-content");
-    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(contentFSize > minSize){
-            content[0].style.fontSize = contentFSize - 2 + "px";
-    }
     var fSize_list = document.getElementsByClassName("font-size");
     for(var i=0; i<fSize_list.length; i++){
         var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
