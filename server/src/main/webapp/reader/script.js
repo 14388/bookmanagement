@@ -24,7 +24,16 @@ function renderChapter(data) {
         "<div class='chapter-content'> " + chapterContent +
         "</div>"
     chapterContainer.innerHTML += html;
+    appendFootNoteOverlay();
     bookScroll();
+}
+
+function appendFootNoteOverlay() {
+    let html = "<div class=\"foot-note\" id=\"foot-note\">\n" +
+        "    <div class=\"background-overlay\"></div>\n" +
+        "    <div class=\"foot-note-content\"></div>\n" +
+        "</div>"
+    chapterContainer.innerHTML += html;
 }
 
 renderChapterContent();
