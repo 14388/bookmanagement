@@ -3,7 +3,6 @@ body{
     background: rgba(227,229,232,.3);
 }
 .container{
-    z-index: 1;
     margin:7% 5% 5% 5%;
     padding: 0 5%;
     max-width: 90%;
@@ -72,22 +71,4 @@ button.btn{
 
 .highlight {
     background-color: yellow;
-}
-
-/** foot note **/
-.foot-note {
-    z-index: 13;
-    position: fixed;
-}
-.background-overlay {
-    z-index: 14;
-    position: relative;
-    color: dimgrey;
-}
-
-.foot-note-content {
-    z-index: 15;
-    width: 60%;
-    height: 30%;
-    background: white;
 }
