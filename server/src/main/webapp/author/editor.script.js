@@ -32,11 +32,11 @@ function initializeChapterContent() {
                 editor.value = div[0].innerHTML;
             }
         }
-        })
+    })
 }
 
 saveContentButton.onclick = function() {
-    let text = "<div>" + editor.value + "</div>";
+    let text = editor.value;
     var messageJSON = {
         type: "save-chapter-content",
         bookCode: localStorage["browsing-book-id"],
