@@ -1,4 +1,6 @@
 var saveContentButton = document.getElementById("save-content-btn");
+var renderContentButton = document.getElementById("render-btn");
+var editor = document.getElementById("editor");
 var title = document.getElementById("title");
 
 function initializePage() {
@@ -19,30 +21,27 @@ function initializeChapterContent() {
         url: 'http://localhost:8080/book',
         data: JSON.stringify(messageJSON),
         success: function(response) {
-            richTextField.document.getElementsByTagName('body')[0].innerHTML = response;
+            editor.value = response;
+            if(response === '') {
+                initializeEditor();
+            } else {
+                // Remove <div> tag
+                let doc = document.createElement('body');
+                doc.innerHTML = response;
+                let  div = doc.getElementsByTagName('div');
+                editor.value = div[0].innerHTML;
             }
+        }
         })
 }
 
-function enableEditMode() {
-    richTextField.document.designMode = 'On';
-}
-
-richTextField.document.getElementsByTagName('body')[0].addEventListener('paste', (event) => {
-    event.preventDefault();
-
-    let text = event.clipboardData.getData('text');
-
-    richTextField.document.execCommand("insertText", false, text);
-
-});
-
 saveContentButton.onclick = function() {
+    let text = "<div>" + editor.value + "</div>";
     var messageJSON = {
         type: "save-chapter-content",
         bookCode: localStorage["browsing-book-id"],
         chapterNumber: localStorage["browsing-chapter-num"],
-        content: richTextField.document.getElementsByTagName('body')[0].innerHTML
+        content: text
     }
     $.ajax({
         type: 'POST',
@@ -56,745 +55,193 @@ saveContentButton.onclick = function() {
     })
 }
 
-function italic() {
-    var formatted = false;
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        var endTag = range.endContainer.parentNode;
-        var outerNode = null;
-        var selectedText = "";
-        var nodeCounter = 0;
-        var condition = 0;
+editor.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        editor.focus();
+        editor.value += '\r\n\r\n' + "<p>" + '\r\n' + "</p>";
+        editor.selectionStart -= 5;
+        editor.selectionEnd -= 5;
+    }
+});
 
-        while(typeof(range.cloneContents().childNodes[nodeCounter]) !== 'undefined') {
-            if(typeof(range.cloneContents().childNodes[nodeCounter].outerHTML) !== 'undefined') {
-                selectedText += range.cloneContents().childNodes[nodeCounter].outerHTML;
+
+editor.onpaste = function(event) {
+    event.preventDefault();
+    let text = event.clipboardData.getData('text');
+    var numberOfLineBreaks = (text.match(/\r?\n/g)||[]).length;
+    var paragraphs = text.split(/\r?\n/g);
+    if(numberOfLineBreaks > 0) {
+        for(var i = 0; i < paragraphs.length; i++) {
+            if(paragraphs[i] !== '') {
+                editor.value += "\r\n\r\n" + "<p>" + "\r\n" + paragraphs[i] + "\r\n" +"</p>";
             }
-            else if(typeof(range.cloneContents().childNodes[nodeCounter].textContent) !== 'undefined'){
-                selectedText += range.cloneContents().childNodes[nodeCounter].textContent;
-            }
-            nodeCounter = nodeCounter + 1;
         }
-
-        while(startTag.tagName !== "HTML" && endTag.tagName !== "HTML") {
-
-            if(startTag.tagName === "I" || endTag.tagName === "I"){
-                condition = condition + 1;
-                if(startTag.firstChild === endTag.firstChild) {
-                    formatted = true;
-                    break;
-                }
-                if(condition === 2) {
-                    formatted = true;
-                    break;
-                }
-            }
-            startTag = startTag.parentNode;
-            endTag = endTag.parentNode;
-        }
-
-        if(!formatted) {
-            if(childNodesList != null) {
-                var counter = 0;
-                var totalItalicElementNode = getNumberOfElementNode(childNodesList, "I");
-                for(var j = 0; j < childNodesList.length; j++) {
-                    if(childNodesList[j].tagName === "I") {
-                        counter = counter + 1;
-                        var parentNode = childNodesList[j].parentNode;
-                        while(childNodesList[j].firstChild) {
-                            outerNode = childNodesList[j].firstChild;
-                            if(childNodesList[childNodesList.length - 1].tagName === "I") {
-                                break;
-                            }
-                            if(!selectedText.includes("<i>")) {
-                                break;
-                            }
-                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "U" || startTag.tagName === "B" || startTag.tagName === "SPAN" || startTag.tagName === "DIV") {
-                                while(parentNode.tagName !== "BODY") {
-                                    if(childNodesList[j].nextSibling === null || childNodesList[j].nextSibling.nodeType === 3) {
-                                        break;
-                                    }
-                                    else {
-                                        if(parentNode.tagName === "U") {
-                                            const newNode = document.createElement('u');
-                                            newNode.appendChild(outerNode);
-                                            outerNode = newNode;
-                                        }
-                                        else if(parentNode.tagName === "B") {
-                                            const newNode = document.createElement('b');
-                                            newNode.appendChild(outerNode);
-                                            outerNode = newNode;
-
-                                        }
-                                        while(parentNode.firstChild) {
-                                            parentNode.parentNode.insertBefore(parentNode.firstChild, parentNode)
-                                        }
-                                        parentNode.parentNode.removeChild(parentNode);
-                                        parentNode = childNodesList[j].parentNode;
-                                    }
-                                }
-                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalItalicElementNode) {
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                                    continue;
-                                }
-                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalItalicElementNode){
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
-                                    continue;
-                                }
-                                else if((startTag.tagName === "HTML" && endTag.tagName === "HTML") && counter === totalItalicElementNode) {
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                                    continue;
-                                }
-                                parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
-                            }
-                            else {
-                                parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                            }
-
-                        }
-                        if(childNodesList[childNodesList.length - 1].tagName !== "I" && selectedText.includes("<i>")) {
-                            parentNode.removeChild(childNodesList[j]);
-                        }
-
-
-                    }
-                }
-
-            }
-            const newNode = document.createElement('i');
-            newNode.appendChild(range.extractContents());
-            range.insertNode(newNode);
-        }
-        else {
-            var selectedTextString = selection.toString();
-            var tempString = selectedTextString;
-            var openingTag = "";
-            var closingTag = "";
-            var startTag = range.startContainer.parentNode;
-            var endTag = range.endContainer.parentNode;
-            var startPoint = range.startOffset;
-            var endPoint = range.endOffset;
-            while(startTag.tagName !== "BODY" && endTag.tagName !== "BODY") {
-                if(startTag.tagname === "I" || endTag.tagName === "I"){
-                    openingTag += "<i>";
-                    closingTag += "</i>";
-                    break;
-                } else {
-                    if(startTag.tagName === "B") {
-                        openingTag += "<b>";
-                        closingTag += "</b>";
-                    } else if(startTag.tagName === "U") {
-                        openingTag += "<u>";
-                        closingTag += "</u>"
-                    }
-                }
-                startTag = startTag.parentNode;
-                endTag = endTag.parentNode;
-            }
-            var startTagTextContent = startTag.textContent;
-            startTag = range.startContainer.parentNode;
-            if(startTagTextContent.indexOf(selectedTextString) === 0){
-                var finalString = selectedTextString + openingTag + startTag.innerHTML.substr(endPoint);
-                startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                startTag.insertAdjacentHTML('afterend', finalString);
-                startTag.outerHTML = '';
-            }
-            else {
-                var selectedTextStringReversed = reverse(selectedTextString);
-                if(reverse(startTagTextContent).indexOf(selectedTextStringReversed) === 0) {
-                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                    var finalString = startTag.outerHTML + tempString;
-                    startTag.insertAdjacentHTML('afterend', finalString)
-                    startTag.outerHTML = '';
-                }
-                else {
-                    var finalString =  tempString + openingTag + startTag.innerHTML.substr(endPoint);
-                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                    finalString = endTag.outerHTML + finalString
-                    startTag.insertAdjacentHTML('afterend', finalString);
-                    startTag.outerHTML = '';
-                }
-            }
-
-        }
+    }else {
+        var len = editor.value.length;
+        var start = editor.selectionStart;
+        var end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + paragraphs[0] + editor.value.substring(end, len);
     }
 }
 
-function bold() {
-    var formatted = false;
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        var endTag = range.endContainer.parentNode;
-        var outerNode = null;
-        var selectedText = "";
-        var nodeCounter = 0;
-        var condition = 0;
+function initializeEditor() {
+    editor.focus();
+    editor.value += "<p>" + '\r\n\r\n' + "</p>";
+    editor.selectionStart -= 5;
+    editor.selectionEnd -= 5;
+}
 
-        while(typeof(range.cloneContents().childNodes[nodeCounter]) !== 'undefined') {
-            if(typeof(range.cloneContents().childNodes[nodeCounter].outerHTML) !== 'undefined') {
-                selectedText += range.cloneContents().childNodes[nodeCounter].outerHTML;
-            }
-            else if(typeof(range.cloneContents().childNodes[nodeCounter].textContent) !== 'undefined'){
-                selectedText += range.cloneContents().childNodes[nodeCounter].textContent;
-            }
-            nodeCounter = nodeCounter + 1;
-        }
-
-        while(startTag.tagName !== "HTML" && endTag.tagName !== "HTML") {
-
-            if(startTag.tagName === "B" || endTag.tagName === "B"){
-                condition = condition + 1;
-                if(startTag.firstChild === endTag.firstChild) {
-                    formatted = true;
-                    break;
-                }
-                if(condition === 2) {
-                    formatted = true;
-                    break;
-                }
-            }
-            startTag = startTag.parentNode;
-            endTag = endTag.parentNode;
-        }
-
-        if(!formatted) {
-            if(childNodesList != null) {
-                var counter = 0;
-                var totalBoldElementNode = getNumberOfElementNode(childNodesList, "B");
-                for(var j = 0; j < childNodesList.length; j++) {
-                    if(childNodesList[j].tagName === "B") {
-                        counter = counter + 1;
-                        var parentNode = childNodesList[j].parentNode;
-                        while(childNodesList[j].firstChild) {
-                            outerNode = childNodesList[j].firstChild;
-                            if(childNodesList[childNodesList.length - 1].tagName === "B") {
-                                break;
-                            }
-                            if(!selectedText.includes("<b>")) {
-                                break;
-                            }
-                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "U" || startTag.tagName === "I" || startTag.tagName === "SPAN" || startTag.tagName === "DIV") {
-                                while(parentNode.tagName !== "BODY") {
-                                    if(childNodesList[j].nextSibling === null || childNodesList[j].nextSibling.nodeType === 3) {
-                                        break;
-                                    }
-                                    else {
-                                        if(parentNode.tagName === "U") {
-                                            const newNode = document.createElement('u');
-                                            newNode.appendChild(outerNode);
-                                            outerNode = newNode;
-                                        }
-                                        else if(parentNode.tagName === "I") {
-                                            const newNode = document.createElement('i');
-                                            newNode.appendChild(outerNode);
-                                            outerNode = newNode;
-
-                                        }
-                                        while(parentNode.firstChild) {
-                                            parentNode.parentNode.insertBefore(parentNode.firstChild, parentNode)
-                                        }
-                                        parentNode.parentNode.removeChild(parentNode);
-                                        parentNode = childNodesList[j].parentNode;
-                                    }
-                                }
-                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalBoldElementNode) {
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                                    continue;
-                                }
-                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalBoldElementNode){
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
-                                    continue;
-                                }
-                                else if((startTag.tagName === "HTML" && endTag.tagName === "HTML") && counter === totalBoldElementNode) {
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                                    continue;
-                                }
-                                parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
-                            }
-                            else {
-                                parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                            }
-
-                        }
-                        if(childNodesList[childNodesList.length - 1].tagName !== "B" && selectedText.includes("<b>")) {
-                            parentNode.removeChild(childNodesList[j]);
-                        }
-
-
-                    }
-                }
-
-            }
-            const newNode = document.createElement('b');
-            newNode.appendChild(range.extractContents());
-            range.insertNode(newNode);
-        }
-        else {
-            var selectedTextString = selection.toString();
-            var tempString = selectedTextString;
-            var openingTag = "";
-            var closingTag = "";
-            var startTag = range.startContainer.parentNode;
-            var endTag = range.endContainer.parentNode;
-            var startPoint = range.startOffset;
-            var endPoint = range.endOffset;
-            while(startTag.tagName !== "BODY" && endTag.tagName !== "BODY") {
-                if(startTag.tagname === "B" || endTag.tagName === "B"){
-                    openingTag += "<b>";
-                    closingTag += "</b>";
-                    break;
-                } else {
-                    if(startTag.tagName === "U") {
-                        openingTag += "<u>";
-                        closingTag += "</u>";
-                    } else if(startTag.tagName === "I") {
-                        openingTag += "<i>";
-                        closingTag += "</i>"
-                    }
-                }
-                startTag = startTag.parentNode;
-                endTag = endTag.parentNode;
-            }
-            var startTagTextContent = startTag.textContent;
-            startTag = range.startContainer.parentNode;
-            if(startTagTextContent.indexOf(selectedTextString) === 0){
-                var finalString = selectedTextString + openingTag + startTag.innerHTML.substr(endPoint);
-                startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                startTag.insertAdjacentHTML('afterend', finalString);
-                startTag.outerHTML = '';
-            }
-            else {
-                var selectedTextStringReversed = reverse(selectedTextString);
-                if(reverse(startTagTextContent).indexOf(selectedTextStringReversed) === 0) {
-                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                    var finalString = startTag.outerHTML + tempString;
-                    startTag.insertAdjacentHTML('afterend', finalString)
-                    startTag.outerHTML = '';
-                }
-                else {
-                    var finalString =  tempString + openingTag + startTag.innerHTML.substr(endPoint);
-                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                    finalString = endTag.outerHTML + finalString
-                    startTag.insertAdjacentHTML('afterend', finalString);
-                    startTag.outerHTML = '';
-                }
-            }
-
-        }
+renderContentButton.onclick = function() {
+    render.document.getElementsByTagName('body')[0].innerHTML = editor.value;
+    var footnotes = render.document.getElementsByTagName('footnote');
+    var footnodeCount = 1;
+    while(typeof(footnotes[0]) !== 'undefined') {
+        var footnoteNode = document.createElement('a');
+        var footnodeContent= footnotes[0].innerHTML;
+        footnoteNode.innerHTML = "[" + footnodeCount + "]";
+        footnoteNode.onclick = (function(footnodeContent) {
+            return function(){ displayFootnote(footnodeContent); }
+        })(footnodeContent);
+        footnoteNode.setAttribute('content', footnodeContent);
+        footnoteNode.setAttribute('href', 'javascript:void(0)');
+        footnotes[0].parentNode.replaceChild(footnoteNode, footnotes[0]);
+        footnodeCount += 1;
     }
 }
 
-function underline() {
-    var formatted = false;
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        var endTag = range.endContainer.parentNode;
-        var outerNode = null;
-        var selectedText = "";
-        var nodeCounter = 0;
-        var condition = 0;
-
-        while(typeof(range.cloneContents().childNodes[nodeCounter]) !== 'undefined') {
-            if(typeof(range.cloneContents().childNodes[nodeCounter].outerHTML) !== 'undefined') {
-                selectedText += range.cloneContents().childNodes[nodeCounter].outerHTML;
-            }
-            else if(typeof(range.cloneContents().childNodes[nodeCounter].textContent) !== 'undefined'){
-                selectedText += range.cloneContents().childNodes[nodeCounter].textContent;
-            }
-            nodeCounter = nodeCounter + 1;
-        }
-
-        while(startTag.tagName !== "HTML" && endTag.tagName !== "HTML") {
-
-            if(startTag.tagName === "U" || endTag.tagName === "U"){
-                condition = condition + 1;
-                if(startTag.firstChild === endTag.firstChild) {
-                    formatted = true;
-                    break;
-                }
-                if(condition === 2) {
-                    formatted = true;
-                    break;
-                }
-            }
-            startTag = startTag.parentNode;
-            endTag = endTag.parentNode;
-        }
-
-        if(!formatted) {
-            if(childNodesList != null) {
-                var counter = 0;
-                var totalUnderlineElementNode = getNumberOfElementNode(childNodesList, "U");
-                for(var j = 0; j < childNodesList.length; j++) {
-                    if(childNodesList[j].tagName === "U") {
-                        counter = counter + 1;
-                        var parentNode = childNodesList[j].parentNode;
-                        while(childNodesList[j].firstChild) {
-                            outerNode = childNodesList[j].firstChild;
-                            if(childNodesList[childNodesList.length - 1].tagName === "U") {
-                                break;
-                            }
-                            if(!selectedText.includes("<u>")) {
-                                break;
-                            }
-                            if( startTag.tagName === "HTML" ||startTag.tagName === "BODY" || startTag.tagName === "B" || startTag.tagName === "I" || startTag.tagName === "SPAN" || startTag.tagName === "DIV") {
-                                while(parentNode.tagName !== "BODY") {
-                                    if(childNodesList[j].nextSibling === null || childNodesList[j].nextSibling.nodeType === 3) {
-                                        break;
-                                    }
-                                    else {
-                                        if(parentNode.tagName === "B") {
-                                            const newNode = document.createElement('b');
-                                            newNode.appendChild(outerNode);
-                                            outerNode = newNode;
-                                        }
-                                        else if(parentNode.tagName === "I") {
-                                            const newNode = document.createElement('i');
-                                            newNode.appendChild(outerNode);
-                                            outerNode = newNode;
-
-                                        }
-                                        while(parentNode.firstChild) {
-                                            parentNode.parentNode.insertBefore(parentNode.firstChild, parentNode)
-                                        }
-                                        parentNode.parentNode.removeChild(parentNode);
-                                        parentNode = childNodesList[j].parentNode;
-                                    }
-                                }
-                                if((startTag.tagName === "HTML" && endTag.tagName === "BODY") && counter === totalUnderlineElementNode) {
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                                    continue;
-                                }
-                                else if((startTag.tagName === "BODY" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode){
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j].nextSibling);
-                                    continue;
-                                }
-                                else if((startTag.tagName === "HTML" && endTag.tagName === "HTML") && counter === totalUnderlineElementNode) {
-                                    parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                                    continue;
-                                }
-                                parentNode.insertBefore(outerNode, childNodesList[j].nextSibling);
-                            }
-                            else {
-                                parentNode.insertBefore(childNodesList[j].firstChild, childNodesList[j]);
-                            }
-
-                        }
-                        if(childNodesList[childNodesList.length - 1].tagName !== "U" && selectedText.includes("<u>")) {
-                            parentNode.removeChild(childNodesList[j]);
-                        }
-                    }
-                }
-
-            }
-            const newNode = document.createElement('u');
-            newNode.appendChild(range.extractContents());
-            range.insertNode(newNode);
-        }
-        else {
-            var selectedTextString = selection.toString();
-            var tempString = selectedTextString;
-            var openingTag = "";
-            var closingTag = "";
-            var startTag = range.startContainer.parentNode;
-            var endTag = range.endContainer.parentNode;
-            var startPoint = range.startOffset;
-            var endPoint = range.endOffset;
-            while(startTag.tagName !== "BODY" && endTag.tagName !== "BODY") {
-                if(startTag.tagname === "U" || endTag.tagName === "U"){
-                    openingTag += "<u>";
-                    closingTag += "</u>";
-                    break;
-                } else {
-                    if(startTag.tagName === "B") {
-                        openingTag += "<b>";
-                        closingTag += "</b>";
-                    } else if(startTag.tagName === "I") {
-                        openingTag += "<i>";
-                        closingTag += "</i>"
-                    }
-                }
-                startTag = startTag.parentNode;
-                endTag = endTag.parentNode;
-            }
-            var startTagTextContent = startTag.textContent;
-            startTag = range.startContainer.parentNode;
-            if(startTagTextContent.indexOf(selectedTextString) === 0){
-                var finalString = selectedTextString + openingTag + startTag.innerHTML.substr(endPoint);
-                startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                startTag.insertAdjacentHTML('afterend', finalString);
-                startTag.outerHTML = '';
-            }
-            else {
-                var selectedTextStringReversed = reverse(selectedTextString);
-                if(reverse(startTagTextContent).indexOf(selectedTextStringReversed) === 0) {
-                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                    var finalString = startTag.outerHTML + tempString;
-                    startTag.insertAdjacentHTML('afterend', finalString)
-                    startTag.outerHTML = '';
-                }
-                else {
-                    var finalString =  tempString + openingTag + startTag.innerHTML.substr(endPoint);
-                    startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-                    finalString = endTag.outerHTML + finalString
-                    startTag.insertAdjacentHTML('afterend', finalString);
-                    startTag.outerHTML = '';
-                }
-            }
-
-        }
-    }
+function displayFootnote(content) {
+    alert(content);
 }
 
+function formatText(style) {
+    editor.focus();
+    var len = editor.value.length;
+    var start = editor.selectionStart;
+    var end = editor.selectionEnd;
+    var selection = editor.value.substring(start, end);
+    var replace = "";
+    if(selection !== '') {
+        if(style === 'bold') {
+            replace = "<b>" + selection + "</b>";
+        }
+        else if(style === 'italic') {
+            replace = "<i>" + selection + "</i>";
+        }
+        else if(style === 'underline') {
+            replace = "<u>" + selection + "</u>";
+        }
+        editor.value =  editor.value.substring(0,start) + replace + editor.value.substring(end,len);
+    }
+}
 
 function changeFontStyle(font) {
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        var endTag = range.endContainer.parentNode;
-        if(childNodesList !== null) {
-            for(var i = 0; i < childNodesList.length; i++) {
-                if(childNodesList[i].className === "font-style") {
-                    const parentNode = childNodesList[i].parentNode;
-                    while(childNodesList[i].firstChild) {
-                        if(startTag.className ===  "font-style") {
-                            break;
-                        }
-                        else {
-                            parentNode.insertBefore(childNodesList[i].firstChild, childNodesList[i]);
-                        }
-                    }
-                    if(startTag.className !== "font-style") {
-                        parentNode.removeChild(childNodesList[i]);
-                    }
-
-                }
-
-            }
-        }
-        const span = document.createElement('span');
-        span.className = "font-style";
-        span.style = 'font-family:' + font.value + ';'
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
+    editor.focus();
+    var len = editor.value.length;
+    var start = editor.selectionStart;
+    var end = editor.selectionEnd;
+    var selection = editor.value.substring(start, end);
+    var replace = "<span style=\"font-family: " + font.value + ";\">" + selection + "</span>";
+    if(selection !== '') {
+        editor.value =  editor.value.substring(0,start) + replace + editor.value.substring(end,len);
     }
+
 }
 
 function changeFontSize(size) {
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        if(childNodesList !== null) {
-            for(var i = 0; i < childNodesList.length; i++) {
-                if(childNodesList[i].className === "font-size") {
-                    const parentNode = childNodesList[i].parentNode;
-                    while(childNodesList[i].firstChild) {
-                        if(startTag.className ===  "font-size") {
-                            break;
-                        }
-                        else {
-                            parentNode.insertBefore(childNodesList[i].firstChild, childNodesList[i]);
-                        }
-                    }
-                    if(startTag.className !== "font-size") {
-                        parentNode.removeChild(childNodesList[i]);
-                    }
-
-                }
-
-            }
-        }
-        const span = document.createElement('span');
-        span.className = "font-size";
-        span.style = 'font-size:' + size.value + ';'
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
-    }
+    editor.focus();
+    var len = editor.value.length;
+    var start = editor.selectionStart;
+    var end = editor.selectionEnd;
+    var selection = editor.value.substring(start, end);
+    var replace = "<span style=\"font-size: " + size.value + ";\">" + selection + "</span>";
+    editor.value =  editor.value.substring(0,start) + replace + editor.value.substring(end,len);
 }
 
 function changeFontColour(colour) {
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        if(childNodesList !== null) {
-            for(var i = 0; i < childNodesList.length; i++) {
-                if(childNodesList[i].className === "font-colour") {
-                    const parentNode = childNodesList[i].parentNode;
-                    while(childNodesList[i].firstChild) {
-                        if(startTag.className ===  "font-colour") {
-                            break;
-                        }
-                        else {
-                            parentNode.insertBefore(childNodesList[i].firstChild, childNodesList[i]);
-                        }
-                    }
-                    if(startTag.className !== "font-colour") {
-                        parentNode.removeChild(childNodesList[i]);
-                    }
+    editor.focus();
+    var len = editor.value.length;
+    var start = editor.selectionStart;
+    var end = editor.selectionEnd;
+    var selection = editor.value.substring(start, end);
+    var replace = "<span style=\"color: " + colour.value + ";\">" + selection + "</span>";
+    editor.value =  editor.value.substring(0,start) + replace + editor.value.substring(end,len);
+}
 
-                }
-
-            }
-        }
-        const span = document.createElement('span');
-        span.className = "font-colour";
-        span.style = 'color:' + colour.value + ';'
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
-    }
+function newParagraph() {
+    editor.focus();
+    editor.value += '\r\n\r\n' + "<p>" + '\r\n\r\n' + "</p>";
+    editor.selectionStart -= 5;
+    editor.selectionEnd -= 5;
 }
 
 function textAlign(textAlignment) {
-    const selection = richTextField.document.getSelection();
-    if (!selection.isCollapsed){
-        const range = selection.getRangeAt(0);
-        var startTag = range.startContainer.parentNode;
-        var firstChildNodesList = getNodesInRange(range);
-        var secondChildNodesList = getNodesInRangeForSpan(range);
-        var childNodesList = combineTwoNodesList(firstChildNodesList, secondChildNodesList);
-        if(childNodesList !== null) {
-            for(var i = 0; i < childNodesList.length; i++) {
-                if(childNodesList[i].className === "text-align") {
-                    const parentNode = childNodesList[i].parentNode;
-                    while(childNodesList[i].firstChild) {
-                        if(startTag.className ===  "text-align") {
-                            break;
-                        }
-                        else {
-                            parentNode.insertBefore(childNodesList[i].firstChild, childNodesList[i]);
-                        }
-                    }
-                    if(startTag.className !== "text-align") {
-                        parentNode.removeChild(childNodesList[i]);
-                    }
+    editor.focus();
+    var len = editor.value.length;
+    var start = editor.selectionStart;
+    var end = editor.selectionEnd;
+    var selection = editor.value.substring(start, end);
 
+    // Insert opening tag for text alignment after <p>
+    while(!selection.includes('<p>') &&
+    !selection.includes('<div style="text-align: right">') &&
+    !selection.includes('<div style="text-align: left">') &&
+    !selection.includes('<div style="text-align: center">')) {
+        start -= 1;
+        selection = editor.value.substring(start,end);
+    }
+    while(selection !== '<p>' &&
+    selection !== '<div style="text-align: right">' &&
+    selection !== '<div style="text-align: left">' &&
+    selection !== '<div style="text-align: center">') {
+        end -= 1;
+        selection = editor.value.substring(start,end);
+    }
+    editor.value = editor.value.substring(0, end) + "\n" + "<div style=\"text-align: " + textAlignment + "\">" + editor.value.substring(end, len);
+    len = editor.value.length;
+
+
+    selection = editor.value.substring(start,end);
+    // Insert closing tag for text alignment before </p>
+    while(!selection.includes('</p>')){
+        end += 1;
+        selection = editor.value.substring(start,end);
+    }
+    while(selection !=='</p>') {
+        start += 1;
+        selection = editor.value.substring(start,end);
+    }
+    editor.value = editor.value.substring(0, start) + "</div>" + "\n" + editor.value.substring(start, end) + editor.value.substring(end, len);
+    len = editor.value.length;
+}
+
+function addFootnote() {
+    editor.focus();
+    var len = editor.value.length;
+    var start = editor.selectionStart;
+    var tempStart = start;
+    var end = editor.selectionEnd;
+    var selection = editor.value.substring(start, end);
+    var wrappedByAnotherFootnote = false;
+    if(selection === '') {
+        var newFootnote = prompt("Add new footnote: ");
+        if(newFootnote !== '' && newFootnote !== null) {
+            while(!selection.includes('<p>')) {
+                tempStart -= 1;
+                selection = editor.value.substring(tempStart, end);
+                if(selection.includes('</footnote>')) {
+                    break;
                 }
-
+                else if(selection.includes('<footnote>')) {
+                    wrappedByAnotherFootnote = true;
+                    break;
+                }
+            }
+            if(!wrappedByAnotherFootnote) {
+                var replace = " <footnote>" + newFootnote + "</footnote> ";
+                editor.value =  editor.value.substring(0,start) + replace + editor.value.substring(end,len);
             }
         }
-        const div = document.createElement('div');
-        div.className = "text-align";
-        div.style = 'text-align: ' + textAlignment;
-        div.appendChild(range.extractContents());
-        range.insertNode(div);
     }
-}
-
-function combineTwoNodesList(firstNodesList, secondNodesList) {
-    var completeNodesList = firstNodesList;
-    for(var i = 0; i < secondNodesList.length; i++) {
-        var duplicated = false;
-        for(var j = 0; j < completeNodesList.length; j++) {
-            if(secondNodesList[i].firstChild === completeNodesList[j].firstChild) {
-                duplicated = true;
-                break;
-            }
-        }
-        if(!duplicated) {
-            completeNodesList.push(secondNodesList[i]);
-        }
-    }
-    return completeNodesList;
-}
-
-function getNextNode (node, skipChildren, endNode){
-    if (node.firstChild)
-        return node.firstChild;
-    while (node)
-    {
-        if (node.nextSibling)
-            return node.nextSibling;
-        node = node.parentNode;
-    }
-};
-
-function getNodesInRange(range)
-{
-    var start = range.startContainer;
-    var end = range.endContainer;
-    var commonAncestor = range.commonAncestorContainer;
-    var nodes = [];
-    var node;
-
-    // walk parent nodes from start to common ancestor
-    for (node = start.parentNode; node; node = node.parentNode)
-    {
-        nodes.push(node);
-        if (node == commonAncestor)
-            break;
-    }
-    nodes.reverse();
-
-    // walk children and siblings from start until end is found
-    for (node = start; node; node = getNextNode(node))
-    {
-        nodes.push(node);
-        if (node == end)
-            break;
-    }
-
-    return nodes;
-};
-
-
-function getNodesInRangeForSpan(range)
-{
-    var startNode = range.startContainer.childNodes[range.startOffset]
-        || range.startContainer;//it's a text node
-    var endNode = range.endContainer.childNodes[range.endOffset]
-        || range.endContainer;
-
-    if (startNode == endNode && startNode.childNodes.length === 0) {
-        return [startNode];
-    };
-
-    var nodes = [];
-    do {
-        nodes.push(startNode);
-    }
-    while (startNode = getNextNode(startNode, false , endNode));
-    return nodes;
-};
-
-function getNumberOfElementNode(nodesList, elementNode) {
-    var count = 0;
-    for(var i = 0; i < nodesList.length; i++) {
-        if(nodesList[i].tagName === elementNode) {
-            count = count + 1;
-        }
-    }
-    return count;
-}
-
-function reverse(s){
-    return [...s].reverse().join("");
 }
 
 initializePage();

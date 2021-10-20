@@ -126,7 +126,7 @@ function unhighlightText(range){
 function increaseFontSize(){
     var content = document.getElementsByClassName("chapter-content");
     var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(contentFSize < maxSize){
+    if(contentFsize < maxSize){
             content[0].style.fontSize = contentFSize + 2 + "px";
     }
     var fSize_list = document.getElementsByClassName("font-size");
