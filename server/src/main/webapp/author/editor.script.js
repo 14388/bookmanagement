@@ -24,13 +24,16 @@ function initializeChapterContent() {
             editor.value = response;
             if(response === '') {
                 initializeEditor();
-            } else {
+            }
+            /*
+            else {
                 // Remove <div> tag
                 let doc = document.createElement('body');
                 doc.innerHTML = response;
                 let  div = doc.getElementsByTagName('div');
                 editor.value = div[0].innerHTML;
             }
+             */
         }
     })
 }
