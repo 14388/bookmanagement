@@ -33,51 +33,64 @@ let highlighted = false;
 let maxSize = 100; //px
 let minSize = 0; //px
 
+function getSafeRange(range){
+    let rArr = []
+    let node = range.startContainer
+    let hasNextNode = true;
+    while(hasNextNode) {
+        let startPoint = node === range.startContainer ? range.startOffset : 0
+        let endPoint = node === range.endContainer ? range.endOffset : node.textContent.length
+        let r = document.createRange()
+        r.setStart(node, startPoint)
+        r.setEnd(node, endPoint)
+        rArr.push(r)
+        hasNextNode = false
+        while(!hasNextNode && node!== range.endContainer){
+            let nextNode = getFirstTextNode(node.nextSibling)
+            if(nextNode){
+                node = nextNode
+                hasNextNode = true
+            }else{
+                if(node.nextSibling){
+                    node = node.nextSibling
+                }else if(node.parentNode){
+                    node = node.parentNode
+                }else break
+            }
+        }
+    }
+    return rArr
+}
+
+function getFirstTextNode(node){
+    if(!node) return null
+    if (node.nodeType === Node.TEXT_NODE) return node
+    var child = node.childNodes
+    for(let i = 0; i<child.length; i++){
+        if (child[i].nodeType === Node.TEXT_NODE){
+            return child[i]
+        }else{
+            let textNode = getFirstTextNode(child[i])
+            if(textNode !== null) return textNode
+        }
+    }
+
+    return null
+}
+
 function highlightSelection(){
-    var highlighted = false;
     var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    var selectedText = selection.toString();
-    var startPoint = range.startOffset;
-    var endPoint = range.endOffset;
-    var startTag = range.startContainer.parentNode;
-    var endTag = range.endContainer.parentNode;
-    if(selectedText.length === (endPoint - startPoint)){
-        highlighted = true;
-        if (startTag.className !== "highlight") {
-            highlightText(range);
+    var dangerousRange = selection.getRangeAt(0);
+    var rArr = getSafeRange(dangerousRange);
+    for(let i = 0; i<rArr.length; i++) {
+        if (rArr[i].startContainer.textContent === "") {
+            continue;
+        }
+        if (rArr[i].startContainer.parentNode.className !== "highlight") {
+            highlightText(rArr[i])
         } else {
-            var afterText = selectedText + "<span class='highlight'>" + startTag.innerHTML.substr(endPoint) + "</span>";
-            startTag.innerHTML = startTag.innerHTML.substr(0, startPoint);
-            startTag.insertAdjacentHTML('afterend', afterText);
+            unhighlightText(rArr[i])
         }
-    }else{
-        if(startTag.className !== "highlight" && endTag.className !== "highlight"){
-            highlightText(range);
-            highlighted = true;
-        }
-    }
-    if (startTag.className === "highlight" && endTag.className === 'highlight' && !highlighted) {
-        highlightText(range);
-        highlighted = true;
-    }
-    if (startTag.className === "highlight" && !highlighted){
-        highlighted = true;
-        var startTag_remains = startTag.innerHTML.substr(0, startPoint);
-        var startTag_selected = startTag.innerHTML.substr(startPoint);
-        var outer_text = selectedText.substr(startTag_selected.length, selectedText.length);
-        range.deleteContents();
-        startTag.innerHTML = startTag_remains;
-        startTag.insertAdjacentHTML('afterend', startTag_selected + outer_text);
-    }
-    if (endTag.className === "highlight" && !highlighted){
-        highlighted = true;
-        var endTag_remains = endTag.innerHTML.substr(endPoint, endTag.length);
-        var endTag_selected = endTag.innerHTML.substr(0, endPoint);
-        var outer_text = selectedText.substr(0, selectedText.length - endTag_selected.length);
-        range.deleteContents();
-        endTag.innerHTML = endTag_remains;
-        endTag.insertAdjacentHTML('beforeBegin', outer_text + endTag_selected);
     }
     $('.highlight').each(function(){
         if($(this).html() === ''){
@@ -95,10 +108,25 @@ function highlightText(range){
     range.insertNode(newNode);
 }
 
+function unhighlightText(range){
+    let hNode = range.startContainer.parentNode
+    let tNode = document.createTextNode(range.toString())
+    let newNode_1 = document.createElement("span")
+    newNode_1.className = "highlight"
+    newNode_1.textContent = hNode.innerHTML.substr(0, range.startOffset)
+    let newNode_2 = document.createElement("span")
+    newNode_2.className = "highlight"
+    newNode_2.textContent = hNode.innerHTML.substr(range.endOffset)
+    hNode.remove()
+    range.insertNode(newNode_2)
+    range.insertNode(tNode)
+    range.insertNode(newNode_1)
+}
+
 function increaseFontSize(){
     var content = document.getElementsByClassName("chapter-content");
     var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(currentFontsize < maxSize){
+    if(contentFSize < maxSize){
             content[0].style.fontSize = contentFSize + 2 + "px";
     }
     var fSize_list = document.getElementsByClassName("font-size");
@@ -112,7 +140,7 @@ function increaseFontSize(){
 function decreaseFontSize(){
     var content = document.getElementsByClassName("chapter-content");
     var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(currentFontsize > minSize){
+    if(contentFSize > minSize){
             content[0].style.fontSize = contentFSize - 2 + "px";
     }
     var fSize_list = document.getElementsByClassName("font-size");
@@ -148,8 +176,7 @@ function getHighlightPos() {
 
 function loadHighlight(html) {
     html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
-        let trMatch = match.trim()
-        return trMatch;
+        return match.trim()
     })
     console.log(html)
     let arr = JSON.parse(localStorage.getItem(hl))
@@ -179,7 +206,7 @@ function bookScroll(){
         window.scrollTo(0, localStorage.getItem(bmark));
     }
 
-};
+}
 
 window.onbeforeunload = function(e) {
     localStorage.setItem(bmark, window.scrollY);
