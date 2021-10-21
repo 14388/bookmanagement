@@ -35,8 +35,9 @@ renderChapterContent();
 function renderFootnote(chapterContent) {
     localStorage.setItem("chapter-content", chapterContent);
     let footnotes = chapterContent.match(/<footnote>.*<\/footnote>/g); // get all the footnote text
-    let html = "";
+
     if (footnotes !== null) {
+        let html = "";
         storeFootnoteData(footnotes)
         let non_footnote_text = chapterContent.split(/<footnote>.*<\/footnote>/g) // return non-footNote text
 
@@ -46,8 +47,9 @@ function renderFootnote(chapterContent) {
             html += "<a onclick='openFootNote(" +i +")' id='" + i + "' href='javascript:void(0)'>[" + footnote_index + "]</a>";
         }
         html += non_footnote_text[footnotes.length];
+        return html;
     }
-    return html;
+    return chapterContent;
 }
 
 function storeFootnoteData(footnotes) {
