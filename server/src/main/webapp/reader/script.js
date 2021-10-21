@@ -1,11 +1,11 @@
 var chapterContainer = document.getElementById("chapter-content");
 var bmark = "bookCode" + localStorage["current-read-book"] + "chapterCode" + localStorage["current-read-book-chapter"];
 var hl = "bCode" + localStorage["current-read-book"] + "cCode" + localStorage["current-read-book-chapter"];
+let footNotesArr = [];
 
 function renderChapterContent() {
     if (localStorage["current-book-read-chapter"] !== null) {
         var chapterUrl = 'http://localhost:8080/getChapter?bcode=' + localStorage["current-read-book"] + "&index=" + localStorage["current-read-book-chapter"];
-        console.log(chapterUrl)
         $.ajax({
             type: 'GET',
             dataType: 'json',
@@ -19,7 +19,8 @@ function renderChapterContent() {
 
 function renderChapter(data) {
     let html = "";
-    let chapterContent = loadHighlight(data.content)
+    let chapterContent = renderFootnote(data.content)
+    chapterContent = loadHighlight(chapterContent)
     html += "<h3>" + data.title + "</h3>" +
         "<div class='chapter-content'> " + chapterContent +
         "</div>"
@@ -28,6 +29,43 @@ function renderChapter(data) {
 }
 
 renderChapterContent();
+
+
+// script for Footnote - START
+function renderFootnote(chapterContent) {
+    localStorage.setItem("chapter-content", chapterContent);
+    let footnotes = chapterContent.match(/<footnote>.*<\/footnote>/g); // get all the footnote text
+    let html = "";
+    if (footnotes !== null) {
+        storeFootnoteData(footnotes)
+        let non_footnote_text = chapterContent.split(/<footnote>.*<\/footnote>/g) // return non-footNote text
+
+        for (let i=0;i < footnotes.length; i++) {
+            let footnote_index = i + 1;
+            html += non_footnote_text[i];
+            html += "<a onclick='openFootNote(" +i +")' id='" + i + "' href='javascript:void(0)'>[" + footnote_index + "]</a>";
+        }
+        html += non_footnote_text[footnotes.length];
+    }
+    return html;
+}
+
+function storeFootnoteData(footnotes) {
+    for (let i = 0; i < footnotes.length; i++) {
+        let footnoteContent = footnotes[i].replace(/<\/?footnote>/g, '');
+        let footnote = {
+            "index" : i + 1,
+            "content" : footnoteContent
+        }
+        footNotesArr.push(footnote)
+    }
+}
+
+function openFootNote(footnoteIndex) {
+    let footnote = footNotesArr[footnoteIndex];
+    window.alert(footnote.content)
+}
+// SCRIPT FOR FOOTNOTE - END
 
 let highlighted = false;
 let maxSize = 100; //px
@@ -126,7 +164,7 @@ function unhighlightText(range){
 function increaseFontSize(){
     var content = document.getElementsByClassName("chapter-content");
     var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(contentFsize < maxSize){
+    if(contentFSize < maxSize){
             content[0].style.fontSize = contentFSize + 2 + "px";
     }
     var fSize_list = document.getElementsByClassName("font-size");
@@ -154,10 +192,11 @@ function decreaseFontSize(){
 function getHighlightPos() {
     var str = document.getElementsByClassName("chapter-content")[0].innerHTML.trim()
     let arr = str.match(/<span class="highlight">[\w .,]+<\/span>/g) // find all content inside highlight
+    // highlight text with <span>
     if(arr !== null){
-        let arrWord = arr.map(s => s.replace(/<\/?span( class="highlight")?>/g, ''))//highlight text
+        let arrWord = arr.map(s => s.replace(/<\/?span( class="highlight")?>/g, ''))//highlight text, strip highlight <span>
         let arr2 = str.split(/<span class="highlight">[\w .,]+<\/span>/) // return non-highlight text
-        arr2 = arr2.map(s => s.replace(/<\/?(.*?)>/g, '')) //delete all tag
+        arr2 = arr2.map(s => s.replace(/<\/?(.*?)>/g, '')) //delete all tag, strip all tag ex: <i>, <b>
         let idxArr = []
         let currentLen = 0
         for (let i = 0; i < arr.length; i++) {
@@ -178,7 +217,6 @@ function loadHighlight(html) {
     html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
         return match.trim()
     })
-    console.log(html)
     let arr = JSON.parse(localStorage.getItem(hl))
     if(arr !== null) {
         for (var i = 0; i < arr.length; i++) {
