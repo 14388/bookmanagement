@@ -77,6 +77,21 @@ function getFirstTextNode(node){
 
     return null
 }
+function getLastTextNode(node){
+    if(!node) return null
+    if (node.nodeType === Node.TEXT_NODE) return node
+    let child = node.childNodes;
+    for(let i = child.length - 1; i>=0; i--){
+        if (child[i].nodeType === Node.TEXT_NODE){
+            return child[i]
+        }else{
+            let textNode = getLastTextNode(child[i])
+            if(textNode !== null) return textNode
+        }
+    }
+
+    return null
+}
 
 function highlightSelection(){
     var selection = window.getSelection();
@@ -152,33 +167,77 @@ function decreaseFontSize(){
     }
 }
 function getHighlightPos() {
-    var str = document.getElementsByClassName("chapter-content")[0].innerHTML.trim()
-    let arr = str.match(/<span class="highlight">[\w .,]+<\/span>/g) // find all content inside highlight
-    if(arr !== null){
-        let arrWord = arr.map(s => s.replace(/<\/?span( class="highlight")?>/g, ''))//highlight text
-        let arr2 = str.split(/<span class="highlight">[\w .,]+<\/span>/) // return non-highlight text
-        arr2 = arr2.map(s => s.replace(/<\/?(.*?)>/g, '')) //delete all tag
-        let idxArr = []
-        let currentLen = 0
-        for (let i = 0; i < arr.length; i++) {
-            currentLen += arr2[i].length
-            let idx = {
-                start: currentLen,
-                end: currentLen + arrWord[i].length
-            }
-            currentLen += arrWord[i].length
-            idxArr.push(idx)
+    let hArr = []
+    let content = $('.chapter-content')[0]
+    let node = getFirstTextNode(content)
+    let index = 0;
+    let length = 0;
+
+    let hasNextNode = true;
+    while(hasNextNode) {
+        if (node.parentNode.className !== "highlight") {
+            index += node.length
+        } else {
+            length += node.length
+            hArr.push({
+                start: index,
+                length: length
+            })
+            index += node.length
+            length = 0
         }
-        return idxArr
+        hasNextNode = false
+        while(!hasNextNode && node!== getLastTextNode(content)){
+            let nextNode = getFirstTextNode(node.nextSibling)
+            if(nextNode){
+                node = nextNode
+                hasNextNode = true
+            }else{
+                if(node.nextSibling){
+                    node = node.nextSibling
+                }else if(node.parentNode){
+                    node = node.parentNode
+                }else break
+            }
+        }
     }
-    return null
+    return hArr
+}
+function saveHighlight(){
+    let oldList = []
+    try{
+        oldList = JSON.parse(localStorage.getItem(hl))
+    }catch (ReferenceError){
+        console.log("no saved highlight")
+    }
+    let newList = getHighlightPos()
+    if(oldList.length !== 0){
+        for (let i = 0; i < newList.length; i++){
+            let nls = newList[i].start
+            let nle = newList[i].start + newList[i].length
+            for(let j = 0; j < oldList.length; j++) {
+                let ols = oldList[j].start
+                let ole = oldList[j].start + oldList[j].length
+                if ((nls > ols && nls < ole) ||                         //start inside another highlighted phrase
+                    (nle > ols && nle < ole) ||                         //end inside another highlighted phrase
+                    (nls === ols && nle === ole)) {                     //identical
+                    oldList[j].remove()
+                }
+            }
+        }
+        oldList.concat(newList)
+        oldList.sort(function (a, b){
+            return a.start - b.start
+        })
+    }else{
+        localStorage.setItem(hl, JSON.stringify(newList))
+    }
 }
 
 function loadHighlight(html) {
     html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
         return match.trim()
     })
-    console.log(html)
     let arr = JSON.parse(localStorage.getItem(hl))
     if(arr !== null) {
         for (var i = 0; i < arr.length; i++) {

@@ -20,6 +20,14 @@
     <url-pattern>/getChapter</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>GetBook</servlet-name>
+    <servlet-class>com.bookapp.servlet.GetBook</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetBook</servlet-name>
+    <url-pattern>/get</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>BookServlet</servlet-name>
     <servlet-class>com.bookapp.servlet.BookServlet</servlet-class>
   </servlet>
@@ -33,7 +41,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>ListAllBook</servlet-name>
-    <url-pattern>/book/all</url-pattern>
+    <url-pattern>/list</url-pattern>
   </servlet-mapping>
 </web-app>
 

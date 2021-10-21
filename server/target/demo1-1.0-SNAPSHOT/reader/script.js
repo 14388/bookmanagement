@@ -1,101 +1,111 @@
-/* Button */
-let isBold = false;
-let isItalic = false;
+var chapterContainer = document.getElementById("chapter-content");
+var bmark = "bookCode" + localStorage["current-read-book"] + "chapterCode" + localStorage["current-read-book-chapter"];
+var hl = "bCode" + localStorage["current-read-book"] + "cCode" + localStorage["current-read-book-chapter"];
+
+function renderChapterContent() {
+    if (localStorage["current-book-read-chapter"] !== null) {
+        var chapterUrl = 'http://localhost:8080/getChapter?bcode=' + localStorage["current-read-book"] + "&index=" + localStorage["current-read-book-chapter"];
+        console.log(chapterUrl)
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            url: chapterUrl,
+            success: function(data) {
+                renderChapter(data);
+            }})
+    }
+}
+
+function renderChapter(data) {
+    let html = "";
+    let chapterContent = loadHighlight(data.content)
+    html += "<h3>" + data.title + "</h3>" +
+        "<div class='chapter-content'> " + chapterContent +
+        "</div>"
+    chapterContainer.innerHTML += html;
+    bookScroll();
+}
+
+renderChapterContent();
+
 let highlighted = false;
-let maxSize = 30; //px
-let minSize = 10; //px
+let maxSize = 100; //px
+let minSize = 0; //px
 
-
-// function toItalic() {
-//     let style = 'italic';
-//     changeFontStyle(style)
-// }
-//
-// function changeToNormal() {
-//     let style = 'normal';
-//     changeFontStyle(style)
-// }
-
-function toBold() {
-    if (isBold === false) {
-        changeFontWeight('bold');
-        isBold = true;
-    } else {
-        changeFontWeight('normal')
-        isBold = false;
+function getSafeRange(range){
+    let rArr = []
+    let node = range.startContainer
+    let hasNextNode = true;
+    while(hasNextNode) {
+        let startPoint = node === range.startContainer ? range.startOffset : 0
+        let endPoint = node === range.endContainer ? range.endOffset : node.textContent.length
+        let r = document.createRange()
+        r.setStart(node, startPoint)
+        r.setEnd(node, endPoint)
+        rArr.push(r)
+        hasNextNode = false
+        while(!hasNextNode && node!== range.endContainer){
+            let nextNode = getFirstTextNode(node.nextSibling)
+            if(nextNode){
+                node = nextNode
+                hasNextNode = true
+            }else{
+                if(node.nextSibling){
+                    node = node.nextSibling
+                }else if(node.parentNode){
+                    node = node.parentNode
+                }else break
+            }
+        }
     }
+    return rArr
 }
 
-function changeFontWeight(weight) {
-    var chapter = document.getElementsByClassName("chapter-content");
-    for (let i = 0; i < chapter.length; i++) {
-        chapter[i].style.fontWeight = weight;
+function getFirstTextNode(node){
+    if(!node) return null
+    if (node.nodeType === Node.TEXT_NODE) return node
+    var child = node.childNodes
+    for(let i = 0; i<child.length; i++){
+        if (child[i].nodeType === Node.TEXT_NODE){
+            return child[i]
+        }else{
+            let textNode = getFirstTextNode(child[i])
+            if(textNode !== null) return textNode
+        }
     }
-}
 
-function toItalic(style) {
-    if (isItalic === false) {
-        changeFontStyle('italic');
-        isItalic = true;
-    } else {
-        changeFontStyle('normal')
-        isItalic = false;
-    }
+    return null
 }
-
-function changeFontStyle(style) {
-    var chapter = document.getElementsByClassName("chapter-content");
-    for (let i = 0; i < chapter.length; i++) {
-        chapter[i].style.fontStyle = style;
+function getLastTextNode(node){
+    if(!node) return null
+    if (node.nodeType === Node.TEXT_NODE) return node
+    let child = node.childNodes;
+    for(let i = child.length - 1; i>=0; i--){
+        if (child[i].nodeType === Node.TEXT_NODE){
+            return child[i]
+        }else{
+            let textNode = getLastTextNode(child[i])
+            if(textNode !== null) return textNode
+        }
     }
+
+    return null
 }
 
 function highlightSelection(){
-    var highlighted = false;
     var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    var selectedText = selection.toString();
-    var startPoint = range.startOffset;
-    var endPoint = range.endOffset;
-    var anchorTag = range.startContainer.parentNode;
-    var focusTag = range.endContainer.parentNode;
-    if(selectedText.length === (endPoint - startPoint)){
-        highlighted = true;
-        console.log(document.getElementById("content1").innerHTML);
-        if (anchorTag.className !== "highlight") {
-            highlightText(range);
+    var dangerousRange = selection.getRangeAt(0);
+    var rArr = getSafeRange(dangerousRange);
+    for(let i = 0; i<rArr.length; i++) {
+        if (rArr[i].startContainer.textContent === "") {
+            continue;
+        }
+        if (rArr[i].startContainer.parentNode.className !== "highlight") {
+            highlightText(rArr[i])
         } else {
-            var afterText = selectedText + "<span class='highlight'>" + anchorTag.innerHTML.substr(endPoint) + "</span>";
-            anchorTag.innerHTML = anchorTag.innerHTML.substr(0, startPoint);
-            anchorTag.insertAdjacentHTML('afterend', afterText);
+            unhighlightText(rArr[i])
         }
-    }else{
-        if(anchorTag.className !== "highlight" && focusTag.className !== "highlight"){
-            highlightText(range);
-            highlighted = true;
-        }
-    }
-    if (anchorTag.className === "highlight" && focusTag.className === 'highlight' && !highlighted) {
-        highlightText(range);
-        highlighted = true;
-    }
-    if (anchorTag.className === "highlight" && !highlighted){
-        highlighted = true;
-        var anchorTag_remains = anchorTag.innerHTML.substr(0, startPoint);
-        var anchorTag_selected = anchorTag.innerHTML.substr(startPoint);
-        var outer_text = selectedText.substr(anchorTag_selected.length, selectedText.length);
-        range.deleteContents();
-        anchorTag.innerHTML = anchorTag_remains;
-        anchorTag.insertAdjacentHTML('afterend', anchorTag_selected + outer_text);
-    }
-    if (focusTag.className === "highlight" && !highlighted){
-        highlighted = true;
-        var focusTag_remains = focusTag.innerHTML.substr(endPoint, focusTag.length);
-        var focusTag_selected = focusTag.innerHTML.substr(0, endPoint);
-        var outer_text = selectedText.substr(0, selectedText.length - focusTag_selected.length);
-        range.deleteContents();
-        focusTag.innerHTML = focusTag_remains;
-        focusTag.insertAdjacentHTML('beforeBegin', outer_text + focusTag_selected);
     }
     $('.highlight').each(function(){
         if($(this).html() === ''){
@@ -113,23 +123,151 @@ function highlightText(range){
     range.insertNode(newNode);
 }
 
+function unhighlightText(range){
+    let hNode = range.startContainer.parentNode
+    let tNode = document.createTextNode(range.toString())
+    let newNode_1 = document.createElement("span")
+    newNode_1.className = "highlight"
+    newNode_1.textContent = hNode.innerHTML.substr(0, range.startOffset)
+    let newNode_2 = document.createElement("span")
+    newNode_2.className = "highlight"
+    newNode_2.textContent = hNode.innerHTML.substr(range.endOffset)
+    hNode.remove()
+    range.insertNode(newNode_2)
+    range.insertNode(tNode)
+    range.insertNode(newNode_1)
+}
+
 function increaseFontSize(){
-    var content_list = document.getElementsByClassName("chapter-content");
-    for(var i=0; i<content_list.length; i++){
-        var currentFontsize = parseInt(getComputedStyle(content_list[i]).fontSize);
-        console.log(currentFontsize);
+    var content = document.getElementsByClassName("chapter-content");
+    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
+    if(contentFsize < maxSize){
+            content[0].style.fontSize = contentFSize + 2 + "px";
+    }
+    var fSize_list = document.getElementsByClassName("font-size");
+    for(var i=0; i<fSize_list.length; i++){
+        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
         if(currentFontsize < maxSize){
-            content_list[i].style.fontSize = currentFontsize + 2 + "px";
+            fSize_list[i].style.fontSize = currentFontsize + 2 + "px";
         }
     }
 }
 function decreaseFontSize(){
-    var content_list = document.getElementsByClassName("chapter-content");
-    for(var i=0; i<content_list.length; i++){
-        var currentFontsize = parseInt(getComputedStyle(content_list[i]).fontSize);
-        console.log(currentFontsize);
+    var content = document.getElementsByClassName("chapter-content");
+    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
+    if(contentFSize > minSize){
+            content[0].style.fontSize = contentFSize - 2 + "px";
+    }
+    var fSize_list = document.getElementsByClassName("font-size");
+    for(var i=0; i<fSize_list.length; i++){
+        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
         if(currentFontsize > minSize){
-            content_list[i].style.fontSize = currentFontsize - 2 + "px";
+            fSize_list[i].style.fontSize = currentFontsize - 2 + "px";
         }
     }
 }
+function getHighlightPos() {
+    let hArr = []
+    let content = $('.chapter-content')[0]
+    let node = getFirstTextNode(content)
+    let index = 0;
+    let length = 0;
+
+    let hasNextNode = true;
+    while(hasNextNode) {
+        if (node.parentNode.className !== "highlight") {
+            index += node.length
+        } else {
+            length += node.length
+            hArr.push({
+                start: index,
+                length: length
+            })
+            index += node.length
+            length = 0
+        }
+        hasNextNode = false
+        while(!hasNextNode && node!== getLastTextNode(content)){
+            let nextNode = getFirstTextNode(node.nextSibling)
+            if(nextNode){
+                node = nextNode
+                hasNextNode = true
+            }else{
+                if(node.nextSibling){
+                    node = node.nextSibling
+                }else if(node.parentNode){
+                    node = node.parentNode
+                }else break
+            }
+        }
+    }
+    return hArr
+}
+function saveHighlight(){
+    let oldList = []
+    try{
+        oldList = JSON.parse(localStorage.getItem(hl))
+    }catch (ReferenceError){
+        console.log("no saved highlight")
+    }
+    let newList = getHighlightPos()
+    if(oldList.length !== 0){
+        for (let i = 0; i < newList.length; i++){
+            let nls = newList[i].start
+            let nle = newList[i].start + newList[i].length
+            for(let j = 0; j < oldList.length; j++) {
+                let ols = oldList[j].start
+                let ole = oldList[j].start + oldList[j].length
+                if ((nls > ols && nls < ole) ||                         //start inside another highlighted phrase
+                    (nle > ols && nle < ole) ||                         //end inside another highlighted phrase
+                    (nls === ols && nle === ole)) {                     //identical
+                    oldList[j].remove()
+                }
+            }
+        }
+        oldList.concat(newList)
+        oldList.sort(function (a, b){
+            return a.start - b.start
+        })
+    }else{
+        localStorage.setItem(hl, JSON.stringify(newList))
+    }
+}
+
+function loadHighlight(html) {
+    html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
+        return match.trim()
+    })
+    let arr = JSON.parse(localStorage.getItem(hl))
+    if(arr !== null) {
+        for (var i = 0; i < arr.length; i++) {
+            var start = arr[i].start
+            var end = arr[i].end
+            var reg = /<.*?>/g
+            while ((tag = reg.exec(html)) !== null) {
+                if (tag.index < start) {
+                    start += tag.toString().length
+                    end += tag.toString().length
+                }
+            }
+            if(html[0] === "\r" | html[0] === "\n"){
+                html = html.substr(0, start+1) + "<span class='highlight'>" + html.substr(start+1, end - start) + "</span>" + html.substr(end + 1)
+            }else{
+                html = html.substr(0, start) + "<span class='highlight'>" + html.substr(start, end - start) + "</span>" + html.substr(end)
+            }
+        }
+    }
+    return html
+}
+function bookScroll(){
+    var bookmark = localStorage.getItem(bmark);
+    if (bookmark) {
+        window.scrollTo(0, localStorage.getItem(bmark));
+    }
+
+}
+
+window.onbeforeunload = function(e) {
+    localStorage.setItem(bmark, window.scrollY);
+    localStorage.setItem(hl, JSON.stringify(getHighlightPos()))
+};
