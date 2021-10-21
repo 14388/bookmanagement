@@ -24,19 +24,22 @@ function initializeChapterContent() {
             editor.value = response;
             if(response === '') {
                 initializeEditor();
-            } else {
+            }
+            /*
+            else {
                 // Remove <div> tag
                 let doc = document.createElement('body');
                 doc.innerHTML = response;
                 let  div = doc.getElementsByTagName('div');
                 editor.value = div[0].innerHTML;
             }
+             */
         }
-        })
+    })
 }
 
 saveContentButton.onclick = function() {
-    let text = "<div>" + editor.value + "</div>";
+    let text = editor.value;
     var messageJSON = {
         type: "save-chapter-content",
         bookCode: localStorage["browsing-book-id"],
