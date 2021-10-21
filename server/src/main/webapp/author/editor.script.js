@@ -25,26 +25,47 @@ function initializeChapterContent() {
             if(response === '') {
                 initializeEditor();
             }
-            /*
             else {
-                // Remove <div> tag
-                let doc = document.createElement('body');
-                doc.innerHTML = response;
-                let  div = doc.getElementsByTagName('div');
-                editor.value = div[0].innerHTML;
+                /* Remove id from each paragraph retrieved from the database
+                 * This is done to prevent any author from editing id of a paragraph
+                 */
+                let body = document.createElement('body');
+                body.innerHTML = response;
+                let paragraphs = body.getElementsByTagName('p');
+                for(let i = 0; i < paragraphs.length; i++) {
+                    let paragraphWithoutID = document.createElement('p');
+                    paragraphWithoutID.innerHTML = paragraphs[i].innerHTML;
+                    paragraphs[i].parentNode.replaceChild(paragraphWithoutID, paragraphs[i]);
+                }
+                editor.value = body.innerHTML;
             }
-             */
         }
     })
 }
 
 saveContentButton.onclick = function() {
+    // Get plain HTML text from the editor
     let text = editor.value;
+
+    // Add id to each paragraph
+    let body = document.createElement('body');
+    body.innerHTML = text;
+    let paragraphs = body.getElementsByTagName('p');
+    for(let i = 0; i < paragraphs.length; i++) {
+        let paragraphWithID = document.createElement('p');
+        paragraphWithID.innerHTML = paragraphs[i].innerHTML;
+        paragraphWithID.setAttribute("id", (i+1).toString());
+        paragraphs[i].parentNode.replaceChild(paragraphWithID, paragraphs[i]);
+    }
+
+    // Final text to be saved in the database
+    let finalText = body.innerHTML;
+
     var messageJSON = {
         type: "save-chapter-content",
         bookCode: localStorage["browsing-book-id"],
         chapterNumber: localStorage["browsing-chapter-num"],
-        content: text
+        content: finalText
     }
     $.ajax({
         type: 'POST',
