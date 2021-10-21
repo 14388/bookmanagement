@@ -175,35 +175,6 @@ function unhighlightText(range){
     range.insertNode(tNode)
     range.insertNode(newNode_1)
 }
-
-function increaseFontSize(){
-    var content = document.getElementsByClassName("chapter-content");
-    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(contentFSize < maxSize){
-            content[0].style.fontSize = contentFSize + 2 + "px";
-    }
-    var fSize_list = document.getElementsByClassName("font-size");
-    for(var i=0; i<fSize_list.length; i++){
-        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
-        if(currentFontsize < maxSize){
-            fSize_list[i].style.fontSize = currentFontsize + 2 + "px";
-        }
-    }
-}
-function decreaseFontSize(){
-    var content = document.getElementsByClassName("chapter-content");
-    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
-    if(contentFSize > minSize){
-            content[0].style.fontSize = contentFSize - 2 + "px";
-    }
-    var fSize_list = document.getElementsByClassName("font-size");
-    for(var i=0; i<fSize_list.length; i++){
-        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
-        if(currentFontsize > minSize){
-            fSize_list[i].style.fontSize = currentFontsize - 2 + "px";
-        }
-    }
-}
 function getHighlightPos() {
     let hArr = []
     let content = $('.chapter-content')[0]
@@ -241,34 +212,33 @@ function getHighlightPos() {
     }
     return hArr
 }
-function saveHighlight(){
-    let oldList = []
-    try{
-        oldList = JSON.parse(localStorage.getItem(hl))
-    }catch (ReferenceError){
-        console.log("no saved highlight")
+
+function increaseFontSize(){
+    var content = document.getElementsByClassName("chapter-content");
+    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
+    if(contentFSize < maxSize){
+            content[0].style.fontSize = contentFSize + 2 + "px";
     }
-    let newList = getHighlightPos()
-    if(oldList.length !== 0){
-        for (let i = 0; i < newList.length; i++){
-            let nls = newList[i].start
-            let nle = newList[i].start + newList[i].length
-            for(let j = 0; j < oldList.length; j++) {
-                let ols = oldList[j].start
-                let ole = oldList[j].start + oldList[j].length
-                if ((nls > ols && nls < ole) ||                         //start inside another highlighted phrase
-                    (nle > ols && nle < ole) ||                         //end inside another highlighted phrase
-                    (nls === ols && nle === ole)) {                     //identical
-                    oldList[j].remove()
-                }
-            }
+    var fSize_list = document.getElementsByClassName("font-size");
+    for(var i=0; i<fSize_list.length; i++){
+        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
+        if(currentFontsize < maxSize){
+            fSize_list[i].style.fontSize = currentFontsize + 2 + "px";
         }
-        oldList.concat(newList)
-        oldList.sort(function (a, b){
-            return a.start - b.start
-        })
-    }else{
-        localStorage.setItem(hl, JSON.stringify(newList))
+    }
+}
+function decreaseFontSize(){
+    var content = document.getElementsByClassName("chapter-content");
+    var contentFSize = parseInt(getComputedStyle(content[0]).fontSize);
+    if(contentFSize > minSize){
+            content[0].style.fontSize = contentFSize - 2 + "px";
+    }
+    var fSize_list = document.getElementsByClassName("font-size");
+    for(var i=0; i<fSize_list.length; i++){
+        var currentFontsize = parseInt(getComputedStyle(fSize_list[i]).fontSize);
+        if(currentFontsize > minSize){
+            fSize_list[i].style.fontSize = currentFontsize - 2 + "px";
+        }
     }
 }
 
