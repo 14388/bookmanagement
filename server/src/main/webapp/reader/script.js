@@ -19,12 +19,12 @@ function renderChapterContent() {
 
 function renderChapter(data) {
     let html = "";
-    let chapterContent = renderFootnote(data.content)
-    chapterContent = loadHighlight(chapterContent)
-    html += "<h3>" + data.title + "</h3>" +
+    let chapterContent = renderFootnote(data.content) // the data here is still string
+    html += "<h3>" + data.title + "</h3>" + // build html element as string
         "<div class='chapter-content'> " + chapterContent +
         "</div>"
-    chapterContainer.innerHTML += html;
+    chapterContainer.innerHTML += html; // add html element to the DOM as chapterContainer inner div
+    loadHighlight2()
     bookScroll();
 }
 
@@ -244,38 +244,87 @@ function decreaseFontSize(){
     }
 }
 
-function loadHighlight(html) {
-    html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
-        return match.trim()
-    })
+function loadHighlight2() {
+    let CC = $('.chapter-content')[0];
+    let node = getFirstTextNode(CC)
     let arr = JSON.parse(localStorage.getItem(hl))
-    if(arr !== null) {
-        for (var i = 0; i < arr.length; i++) {
-            var start = arr[i].start
-            var end = arr[i].end
-            var reg = /<.*?>/g
-            while ((tag = reg.exec(html)) !== null) {
-                if (tag.index < start) {
-                    start += tag.toString().length
-                    end += tag.toString().length
+    if (arr.length !== 0) {
+        console.log(arr)
+        let index = 0; // highlightCounter
+        let length = 0; // total length of textNode
+        let hasNextNode = true;
+        while(hasNextNode) {
+            if ((length + node.length) > arr[index].start) {
+                console.log(arr[index].start)
+                console.log(length)
+                let startIndex = arr[index].start - length; // get position of starting span in the text node
+                let spanNode = node.splitText(startIndex) // split current text node at the start offset
+                spanNode.splitText(arr[index].length) // split again with the length of highlight
+
+                var newNode = document.createElement("span"); // new node to append later
+                newNode.textContent = spanNode.textContent;
+                newNode.className = "highlight";
+                node.parentNode.replaceChild(newNode, spanNode);
+                length += node.length; // update the current length of plain text
+                index++;
+            } else {
+                length += node.length;
+            }
+            hasNextNode = false
+            while(!hasNextNode && node!== getLastTextNode(CC)){
+                let nextNode = getFirstTextNode(node.nextSibling)
+                if(nextNode){
+                    node = nextNode
+                    hasNextNode = true
+                }else{
+                    if(node.nextSibling){
+                        node = node.nextSibling
+                    }else if(node.parentNode){
+                        node = node.parentNode
+                    }else break
                 }
             }
-            if(html[0] === "\r" | html[0] === "\n"){
-                html = html.substr(0, start+1) + "<span class='highlight'>" + html.substr(start+1, end - start) + "</span>" + html.substr(end + 1)
-            }else{
-                html = html.substr(0, start) + "<span class='highlight'>" + html.substr(start, end - start) + "</span>" + html.substr(end)
-            }
         }
+
     }
-    return html
 }
+
+function addHighLight() {
+
+}
+
 function bookScroll(){
     var bookmark = localStorage.getItem(bmark);
     if (bookmark) {
         window.scrollTo(0, localStorage.getItem(bmark));
     }
-
 }
+
+// function loadHighlight(html) {
+//     html = html.replace(/(?<=<[^\/]*?>)(.*?)(?=<.*?>)/g, function(match){ //remove redundant whitespace inside tag
+//         return match.trim()
+//     })
+//     let arr = JSON.parse(localStorage.getItem(hl))
+//     if(arr !== null) {
+//         for (var i = 0; i < arr.length; i++) {
+//             var start = arr[i].start
+//             var end = arr[i].end
+//             var reg = /<.*?>/g
+//             while ((tag = reg.exec(html)) !== null) {
+//                 if (tag.index < start) {
+//                     start += tag.toString().length
+//                     end += tag.toString().length
+//                 }
+//             }
+//             if(html[0] === "\r" | html[0] === "\n"){
+//                 html = html.substr(0, start+1) + "<span class='highlight'>" + html.substr(start+1, end - start) + "</span>" + html.substr(end + 1)
+//             }else{
+//                 html = html.substr(0, start) + "<span class='highlight'>" + html.substr(start, end - start) + "</span>" + html.substr(end)
+//             }
+//         }
+//     }
+//     return html
+// }
 
 window.onbeforeunload = function(e) {
     localStorage.setItem(bmark, window.scrollY);
