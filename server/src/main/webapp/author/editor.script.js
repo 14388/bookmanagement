@@ -220,7 +220,7 @@ function textAlign(textAlignment) {
         end -= 1;
         selection = editor.value.substring(start,end);
     }
-    editor.value = editor.value.substring(0, end) + "\n" + "<div style=\"text-align: " + textAlignment + "\">" + editor.value.substring(end, len);
+    editor.value = editor.value.substring(0, start) + "<div style=\"text-align: " + textAlignment + ";\">"  + "\n" +editor.value.substring(start, len);
     len = editor.value.length;
 
 
@@ -234,7 +234,7 @@ function textAlign(textAlignment) {
         start += 1;
         selection = editor.value.substring(start,end);
     }
-    editor.value = editor.value.substring(0, start) + "</div>" + "\n" + editor.value.substring(start, end) + editor.value.substring(end, len);
+    editor.value = editor.value.substring(0, end) +  "\n" + "</div>"  + editor.value.substring(end, len);
     len = editor.value.length;
 }
 
